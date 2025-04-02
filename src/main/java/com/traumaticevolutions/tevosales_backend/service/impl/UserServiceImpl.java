@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByNIF(String nif) {
+    public Optional<User> findByNif(String nif) {
         return userRepository.findByNif(nif);
     }
 

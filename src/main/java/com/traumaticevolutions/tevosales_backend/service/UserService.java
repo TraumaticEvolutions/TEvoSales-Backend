@@ -38,7 +38,7 @@ public interface UserService {
      * @param nif NIF del usuario.
      * @return Optional con el usuario encontrado (si existe).
      */
-    Optional<User> findByNIF(String nif);
+    Optional<User> findByNif(String nif);
 
     /**
      * Obtiene todos los usuarios.
