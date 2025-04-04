@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * Servicio encargado de generar y validar tokens JWT usando el username.
- * Autor: Ángel Aragón
+ * @author Ángel Aragón
  */
 @Service
 public class JwtService {
