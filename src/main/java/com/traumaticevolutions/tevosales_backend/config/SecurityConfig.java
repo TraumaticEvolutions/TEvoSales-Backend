@@ -6,7 +6,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.traumaticevolutions.tevosales_backend.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Configuración de seguridad para la API.
@@ -16,8 +18,11 @@ import org.springframework.security.config.Customizer;
  * @author Ángel Aragón
  */
 
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtFilter;
 
     /**
      * Bean que define el codificador de contraseñas.
@@ -36,7 +41,7 @@ public class SecurityConfig {
      * 
      * - Desactiva CSRF para pruebas.
      * - Permite el acceso público al endpoint de registro de usuario.
-     * - Protege el resto de los endpoints requiriendo autenticación básica.
+     * - Protege el resto de los endpoints requiriendo autenticación JWT.
      * 
      * @param http Objeto HttpSecurity para configurar la seguridad.
      * @return SecurityFilterChain configurada.
@@ -47,10 +52,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/register").permitAll()
+                .requestMatchers("/api/users/register","/api/auth/login").permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic(Customizer.withDefaults());
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
