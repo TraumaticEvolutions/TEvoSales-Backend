@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 public class UserRequestDTO {
     private String username;
-    private String names;
+    private String name;
     private String email;
     private String password;
     private String nif;
