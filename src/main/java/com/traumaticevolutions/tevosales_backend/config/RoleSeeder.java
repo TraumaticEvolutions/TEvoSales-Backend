@@ -22,7 +22,7 @@ public class RoleSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        List<String> roleNames = List.of("ADMIN", "CLIENTE", "ENTIDAD");
+        List<String> roleNames = List.of("ROLE_ADMIN", "ROLE_CLIENTE", "ROLE_ENTIDAD");
 
         roleNames.forEach(roleName -> {
             roleService.findByName(roleName).orElseGet(() -> {

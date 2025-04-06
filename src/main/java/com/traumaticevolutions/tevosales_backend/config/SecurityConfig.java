@@ -2,6 +2,7 @@ package com.traumaticevolutions.tevosales_backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,12 +15,14 @@ import lombok.RequiredArgsConstructor;
  * Configuración de seguridad para la API.
  * - Permite acceso libre al registro de usuario.
  * - Protege el resto de endpoints.
- * - Codificación de contraseñas usando BCrypt
+ * - Codificación de contraseñas usando BCrypt.
+ * - Habilitamos anotaciones {@code @PreAuthorize} y {@code @PreAuthorize} con {@code @EnableMethodSecurity(prePostEnabled = true)}.
  * @author Ángel Aragón
  */
 
 @RequiredArgsConstructor
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;

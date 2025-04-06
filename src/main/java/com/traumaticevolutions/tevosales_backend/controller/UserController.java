@@ -9,6 +9,7 @@ import com.traumaticevolutions.tevosales_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,10 +56,11 @@ public class UserController {
 
     /**
      * Endpoint para obtener todos los usuarios.
-     *
+     * Solo podrán acceder usuario con el rol admin usando {@code @PreAuthorize("hasRole('ADMIN')")}.
      * @return Lista de usuarios en formato DTO.
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
 
