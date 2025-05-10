@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
  * - Permite acceso libre al registro de usuario.
  * - Protege el resto de endpoints.
  * - Codificación de contraseñas usando BCrypt.
- * - Habilitamos anotaciones {@code @PreAuthorize} y {@code @PreAuthorize} con {@code @EnableMethodSecurity(prePostEnabled = true)}.
+ * - Habilitamos anotaciones {@code @PreAuthorize} y con {@code @EnableMethodSecurity(prePostEnabled = true)}.
  * @author Ángel Aragón
  */
 
@@ -55,7 +55,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/register","/api/auth/login").permitAll()
+                .requestMatchers("/api/users/register",
+                "/api/auth/**",
+                "/api/products",
+                "/api/products/{id}",
+                "/api/products/search/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
