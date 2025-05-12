@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
  * - Permite acceso libre al registro de usuario.
  * - Protege el resto de endpoints.
  * - Codificación de contraseñas usando BCrypt.
- * - Habilitamos anotaciones {@code @PreAuthorize} y con {@code @EnableMethodSecurity(prePostEnabled = true)}.
+ * - Habilitamos anotaciones {@code @PreAuthorize} y con
+ * {@code @EnableMethodSecurity(prePostEnabled = true)}.
+ * 
  * @author Ángel Aragón
  */
 
@@ -39,7 +41,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-     /**
+    /**
      * Bean que define la cadena de filtros de seguridad.
      * 
      * - Desactiva CSRF para pruebas.
@@ -53,17 +55,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/register",
-                "/api/auth/**",
-                "/api/products",
-                "/api/products/{id}",
-                "/api/products/search/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/users/register",
+                                "/api/auth/**",
+                                "/api/products",
+                                "/api/products/**",
+                                "/api/products/{id}",
+                                "/api/products/search/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
