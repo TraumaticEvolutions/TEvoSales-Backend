@@ -51,7 +51,7 @@ public class User {
 
     /**
      * Pedidos realizados por el usuario.
-     * Relación uno a muchos con {@link Order}: un usuario puede tener varios
+     * Relación {@code @OneToMany} con {@link Order}: un usuario puede tener varios
      * pedidos.
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

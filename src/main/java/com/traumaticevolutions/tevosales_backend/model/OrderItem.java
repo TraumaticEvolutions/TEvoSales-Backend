@@ -56,5 +56,5 @@ public class OrderItem {
      * Calculado y almacenado en BD como copia.
      */
     @Column(nullable = false)
-    private BigDecimal totalPrice;
+    private BigDecimal subtotal;
 }

@@ -45,7 +45,7 @@ public class OrderResponseDTO {
     /**
      * Precio total del pedido (calculado).
      */
-    private BigDecimal totalPrice;
+    private BigDecimal total;
 
     /**
      * Lista de ítems incluidos en el pedido.

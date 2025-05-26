@@ -73,7 +73,7 @@ public class Order {
      * Precio total del pedido. Se calcula en base a los productos y sus cantidades.
      */
     @Column(name = "total_price", nullable = false)
-    private BigDecimal totalPrice;
+    private BigDecimal total;
 
     /**
      * Relación con los productos del pedido, a través de la tabla intermedia
