@@ -1,9 +1,13 @@
 package com.traumaticevolutions.tevosales_backend.service;
 
 import com.traumaticevolutions.tevosales_backend.dto.ProductRequestDTO;
-import com.traumaticevolutions.tevosales_backend.dto.ProductResponseDTO;
+import com.traumaticevolutions.tevosales_backend.model.Product;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Interfaz del servicio para gestionar productos.
@@ -13,11 +17,17 @@ import java.util.List;
  */
 public interface ProductService {
 
-    List<ProductResponseDTO> findAll();
-    ProductResponseDTO findById(Long id);
-    ProductResponseDTO create(ProductRequestDTO dto);
-    ProductResponseDTO update(Long id, ProductRequestDTO dto);
+    List<Product> findAll();
+
+    Optional<Product> findById(Long id);
+
+    Optional<Product> create(ProductRequestDTO dto);
+
+    Optional<Product> update(Long id, ProductRequestDTO dto);
+
     void delete(Long id);
-    List<ProductResponseDTO> findByName(String name);
-    List<ProductResponseDTO> findByCategory(String category);
+
+    List<Product> findByName(String name);
+
+    List<Product> findByCategory(String category);
 }

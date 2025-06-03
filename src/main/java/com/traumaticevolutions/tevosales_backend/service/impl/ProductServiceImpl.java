@@ -1,22 +1,20 @@
 package com.traumaticevolutions.tevosales_backend.service.impl;
 
 import com.traumaticevolutions.tevosales_backend.dto.ProductRequestDTO;
-import com.traumaticevolutions.tevosales_backend.dto.ProductResponseDTO;
 import com.traumaticevolutions.tevosales_backend.model.Product;
 import com.traumaticevolutions.tevosales_backend.repository.ProductRepository;
 import com.traumaticevolutions.tevosales_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Implementación del servicio de productos.
- * Utiliza {@code ProductRepository} y {@code ModelMapper} para convertir entre entidades y DTOs.
- * Gestiona la lógica de negocio para operaciones CRUD y búsqueda por nombre o categoría.
+ * Gestiona la lógica de negocio para operaciones CRUD y búsqueda por nombre o
+ * categoría.
  * 
  * @author Ángel Aragón
  */
@@ -28,60 +26,51 @@ public class ProductServiceImpl implements ProductService {
     private final ModelMapper modelMapper;
 
     /**
-     * Obtiene la lista completa de productos.
-     *
-     * @return lista de productos en formato {@code ProductResponseDTO}
+     * Obtiene todos los productos disponibles.
+     * 
+     * @return lista de productos en formato {@code List<Product>}
      */
     @Override
-    public List<ProductResponseDTO> findAll() {
-        return productRepository.findAll().stream()
-                .map(product -> modelMapper.map(product, ProductResponseDTO.class))
-                .collect(Collectors.toList());
+    public List<Product> findAll() {
+        return productRepository.findAll();
+
     }
 
     /**
      * Busca un producto por su ID.
      *
      * @param id identificador del producto
-     * @return producto en formato {@code ProductResponseDTO}
-     * @throws NoSuchElementException si no se encuentra el producto
+     * @return producto encontrado en formato {@code Optional<Product>}
      */
     @Override
-    public ProductResponseDTO findById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado"));
-        return modelMapper.map(product, ProductResponseDTO.class);
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
     }
 
     /**
-     * Crea un nuevo producto a partir de los datos recibidos.
-     *
-     * @param dto objeto con los datos del nuevo producto
-     * @return producto guardado en formato {@code ProductResponseDTO}
+     * Crea un nuevo producto a partir de los datos proporcionados.
+     * 
+     * @param dto objeto con los datos del producto a crear
+     * @return producto creado en formato {@code Optional<Product>}
      */
     @Override
-    public ProductResponseDTO create(ProductRequestDTO dto) {
+    public Optional<Product> create(ProductRequestDTO dto) {
         Product product = modelMapper.map(dto, Product.class);
-        Product saved = productRepository.save(product);
-        return modelMapper.map(saved, ProductResponseDTO.class);
+        return Optional.of(productRepository.save(product));
     }
 
-    /**
-     * Actualiza un producto existente con los nuevos datos.
-     *
-     * @param id  identificador del producto a actualizar
-     * @param dto objeto con los nuevos datos
-     * @return producto actualizado en formato {@code ProductResponseDTO}
-     * @throws NoSuchElementException si el producto no existe
-     */
     @Override
-    public ProductResponseDTO update(Long id, ProductRequestDTO dto) {
+    public Optional<Product> update(Long id, ProductRequestDTO dto) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Producto no encontrado"));
-
-        modelMapper.map(dto, existing);
-        Product updated = productRepository.save(existing);
-        return modelMapper.map(updated, ProductResponseDTO.class);
+        existing.setName(dto.getName());
+        existing.setDescription(dto.getDescription());
+        existing.setPrice(dto.getPrice());
+        existing.setCategory(dto.getCategory());
+        existing.setImagePath(dto.getImagePath());
+        existing.setStock(dto.getStock());
+        existing.setActive(dto.getActive());
+        return Optional.of(productRepository.save(existing));
     }
 
     /**
@@ -99,28 +88,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Busca productos que contengan el texto indicado en el nombre (sin distinguir mayúsculas).
+     * Busca productos por su nombre (sin distinguir mayúsculas).
      *
-     * @param name texto a buscar en el nombre
-     * @return lista de productos coincidentes en formato {@code ProductResponseDTO}
+     * @param name nombre exacto a buscar
+     * @return lista de productos con ese nombre en formato {@code List<Product>}
      */
     @Override
-    public List<ProductResponseDTO> findByName(String name) {
-        return productRepository.findByNameContainingIgnoreCase(name).stream()
-                .map(product -> modelMapper.map(product, ProductResponseDTO.class))
-                .collect(Collectors.toList());
+    public List<Product> findByName(String name) {
+        List<Product> products = productRepository.findByNameIgnoreCase(name);
+        return products;
     }
 
     /**
      * Busca productos por su categoría (sin distinguir mayúsculas).
-     *
-     * @param category categoría exacta a buscar
-     * @return lista de productos de esa categoría en formato {@code ProductResponseDTO}
+     * 
+     * @param category nombre de la categoría a buscar
+     * @return lista de productos en esa categoría en formato {@code List<Product>}
      */
     @Override
-    public List<ProductResponseDTO> findByCategory(String category) {
-        return productRepository.findByCategoryIgnoreCase(category).stream()
-                .map(product -> modelMapper.map(product, ProductResponseDTO.class))
-                .collect(Collectors.toList());
+    public List<Product> findByCategory(String category) {
+        List<Product> products = productRepository.findByCategoryIgnoreCase(category);
+        return products;
     }
+
 }

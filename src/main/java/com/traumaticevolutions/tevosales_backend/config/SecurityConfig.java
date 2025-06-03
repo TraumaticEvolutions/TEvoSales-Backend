@@ -2,6 +2,7 @@ package com.traumaticevolutions.tevosales_backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,13 +58,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register",
-                                "/api/auth/**",
-                                "/api/products",
-                                "/api/products/**",
-                                "/api/products/{id}",
-                                "/api/products/search/**")
-                        .permitAll()
+                        .requestMatchers("/api/users/register", "/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/products").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -62,11 +62,10 @@ public class Product {
     private String category;
 
     /**
-     * Imagen binaria del producto (almacenada como LONGBLOB).
+     * URL de la imagen del producto
      */
-    @Lob
-    @Column(name = "image", columnDefinition = "LONGBLOB")
-    private byte[] image;
+    @Column(name = "image")
+    private String imagePath;
 
     /**
      * Indica si el producto está activo (visible para clientes).
@@ -78,17 +77,18 @@ public class Product {
      * TODO: Pendiente de crear modelo Provider
      * Proveedor al que pertenece este producto.
      * Relación muchos a uno: muchos productos pueden tener el mismo proveedor.
-     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "provider_id")
-    private Provider provider;*/
+     * 
+     * @ManyToOne(fetch = FetchType.LAZY)
+     * @JoinColumn(name = "provider_id")
+     *                  private Provider provider;
+     */
 
     /**
-    * TODO: Pendiente de crear modelo Discount 
-    * Lista de descuentos aplicables a este producto.
-    * Relación muchos a muchos con la entidad {@code Discount}.
-    * 
-    */
+     * TODO: Pendiente de crear modelo Discount
+     * Lista de descuentos aplicables a este producto.
+     * Relación muchos a muchos con la entidad {@code Discount}.
+     * 
+     */
     // @ManyToMany(mappedBy = "products")
     // private Set<Discount> discounts = new HashSet<>();
 }

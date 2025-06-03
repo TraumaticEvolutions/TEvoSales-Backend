@@ -1,7 +1,7 @@
 package com.traumaticevolutions.tevosales_backend.service;
 
-import com.traumaticevolutions.tevosales_backend.model.Order;
-import com.traumaticevolutions.tevosales_backend.model.OrderItem;
+import com.traumaticevolutions.tevosales_backend.dto.OrderItemRequestDTO;
+import com.traumaticevolutions.tevosales_backend.dto.OrderItemResponseDTO;
 
 import java.util.List;
 
@@ -16,25 +16,24 @@ public interface OrderItemService {
     /**
      * Crea un nuevo ítem de pedido.
      *
-     * @param orderItem el ítem a guardar
-     * @return el ítem guardado
+     * @param orderItemDTO el ítem a guardar
+     * @return el ítem guardado como DTO
      */
-    OrderItem create(OrderItem orderItem);
+    OrderItemResponseDTO create(OrderItemRequestDTO orderItemDTO);
 
     /**
      * Guarda una lista de ítems de pedido.
      *
-     * @param orderItems ítems a guardar
-     * @return lista de ítems guardados
+     * @param orderItemsDTO ítems a guardar
+     * @return lista de ítems guardados como DTO
      */
-    List<OrderItem> saveAll(List<OrderItem> orderItems);
+    List<OrderItemResponseDTO> saveAll(List<OrderItemRequestDTO> orderItemsDTO);
 
     /**
      * Busca los ítems de un pedido específico.
      *
-     * @param order Order del cual se buscan los ítems
-     * @return lista de ítems del pedido
+     * @param orderId identificador del pedido
+     * @return lista de ítems del pedido como DTO
      */
-
-    List<OrderItem> findByOrder(Order order);
+    List<OrderItemResponseDTO> findByOrderId(Long orderId);
 }
