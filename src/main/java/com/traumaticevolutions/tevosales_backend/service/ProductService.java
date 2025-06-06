@@ -4,6 +4,9 @@ import com.traumaticevolutions.tevosales_backend.model.Product;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * Interfaz del servicio para gestionar productos.
  * Define operaciones CRUD y búsquedas básicas.
@@ -25,4 +28,6 @@ public interface ProductService {
     List<Product> findByName(String name);
 
     List<Product> findByCategory(String category);
+
+    Page<Product> findAllPaged(Pageable pageable);
 }

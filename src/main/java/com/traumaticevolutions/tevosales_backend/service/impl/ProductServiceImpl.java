@@ -4,6 +4,9 @@ import com.traumaticevolutions.tevosales_backend.model.Product;
 import com.traumaticevolutions.tevosales_backend.repository.ProductRepository;
 import com.traumaticevolutions.tevosales_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -113,6 +116,17 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findByCategory(String category) {
         List<Product> products = productRepository.findByCategoryIgnoreCase(category);
         return products;
+    }
+
+    /**
+     * Obtiene una página de productos paginada.
+     *
+     * @param pageable objeto que contiene la información de paginación
+     * @return página de productos en formato {@code Page<Product>}
+     */
+    @Override
+    public Page<Product> findAllPaged(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
 }

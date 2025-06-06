@@ -7,6 +7,9 @@ import com.traumaticevolutions.tevosales_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +41,16 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAll().stream()
                 .map(product -> modelMapper.map(product, ProductResponseDTO.class))
                 .toList());
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<ProductResponseDTO>> getAllPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> products = productService.findAllPaged(pageable);
+        Page<ProductResponseDTO> dtoPage = products.map(product -> modelMapper.map(product, ProductResponseDTO.class));
+        return ResponseEntity.ok(dtoPage);
     }
 
     /**
