@@ -7,6 +7,9 @@ import com.traumaticevolutions.tevosales_backend.service.OrderService;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +54,23 @@ public class OrderController {
                 .map(order -> modelMapper.map(order, OrderResponseDTO.class))
                 .toList();
         return ResponseEntity.ok(orders);
+    }
+
+    /**
+     * Obtiene todos los pedidos del usuario autenticado de forma paginada.
+     *
+     * @param page número de página a obtener
+     * @param size tamaño de la página
+     * @return página de pedidos en formato {@code Page<OrderResponseDTO>}
+     */
+    @GetMapping("/paged")
+    public ResponseEntity<Page<OrderResponseDTO>> getUserOrdersPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orders = orderService.getAllOrdersAuthUserPaged(pageable);
+        Page<OrderResponseDTO> dtoPage = orders.map(order -> modelMapper.map(order, OrderResponseDTO.class));
+        return ResponseEntity.ok(dtoPage);
     }
 
     /**

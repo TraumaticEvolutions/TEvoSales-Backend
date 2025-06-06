@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -178,4 +180,18 @@ public class OrderServiceImpl implements OrderService {
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);
     }
+    /**
+     * Obtiene todos los pedidos del usuario autenticado de forma paginada.
+     *
+     * @param pageable información de paginación
+     * @return página de pedidos del usuario
+     */
+    @Override
+    public Page<Order> getAllOrdersAuthUserPaged(Pageable pageable) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
+        return orderRepository.findByUser(user, pageable);
+    }
+
 }

@@ -2,6 +2,9 @@ package com.traumaticevolutions.tevosales_backend.repository;
 
 import com.traumaticevolutions.tevosales_backend.model.Order;
 import com.traumaticevolutions.tevosales_backend.model.User;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +27,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      * @return lista de pedidos del usuario
      */
     List<Order> findByUser(User user);
+
+    /**
+     * Obtiene todos los pedidos asociados a un usuario específico de forma
+     * paginada.
+     *
+     * @param user     el usuario autenticado
+     * @param pageable información de paginación
+     * @return página de pedidos del usuario
+     */
+    Page<Order> findByUser(User user, Pageable pageable);
 
     /**
      * Busca un pedido por su ID y el usuario asociado.

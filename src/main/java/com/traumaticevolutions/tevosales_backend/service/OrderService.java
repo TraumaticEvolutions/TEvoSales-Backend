@@ -3,6 +3,9 @@ package com.traumaticevolutions.tevosales_backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.traumaticevolutions.tevosales_backend.dto.OrderRequestDTO;
 import com.traumaticevolutions.tevosales_backend.model.Order;
 
@@ -20,6 +23,14 @@ public interface OrderService {
      * @return lista de pedidos del usuario
      */
     List<Order> getAllOrdersAuthUser();
+
+    /**
+     * Obtiene todos los pedidos del usuario autenticado de forma paginada.
+     *
+     * @param pageable información de paginación
+     * @return página de pedidos del usuario
+     */
+    Page<Order> getAllOrdersAuthUserPaged(Pageable pageable);
 
     /**
      * Obtiene un pedido específico del usuario autenticado por su ID.
