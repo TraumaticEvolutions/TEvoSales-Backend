@@ -91,7 +91,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDTO> create(@RequestBody ProductRequestDTO dto) {
         try {
-            Product product = productService.create(dto)
+            Product product = productService.create(modelMapper.map(dto, Product.class))
                     .orElseThrow(() -> new NoSuchElementException("Error al crear el producto"));
             ProductResponseDTO response = modelMapper.map(product, ProductResponseDTO.class);
             return ResponseEntity.status(201).body(response);
@@ -114,7 +114,8 @@ public class ProductController {
             @PathVariable Long id,
             @RequestBody ProductRequestDTO dto) {
         try {
-            Product product = productService.update(id, dto)
+
+            Product product = productService.update(id, modelMapper.map(dto, Product.class))
                     .orElseThrow(() -> new NoSuchElementException("Producto no encontrado"));
             ProductResponseDTO response = modelMapper.map(product, ProductResponseDTO.class);
             return ResponseEntity.ok(response);

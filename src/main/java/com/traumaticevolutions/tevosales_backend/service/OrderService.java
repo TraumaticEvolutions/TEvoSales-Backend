@@ -1,72 +1,66 @@
 package com.traumaticevolutions.tevosales_backend.service;
 
-import com.traumaticevolutions.tevosales_backend.dto.OrderRequestDTO;
-import com.traumaticevolutions.tevosales_backend.dto.OrderResponseDTO;
-import com.traumaticevolutions.tevosales_backend.model.User;
-
 import java.util.List;
+import java.util.Optional;
+
+import com.traumaticevolutions.tevosales_backend.dto.OrderRequestDTO;
+import com.traumaticevolutions.tevosales_backend.model.Order;
 
 /**
- * Servicio que define las operaciones disponibles para gestionar pedidos.
+ * Interfaz del servicio para gestionar pedidos.
+ * Define operaciones CRUD y búsquedas específicas para pedidos del usuario
+ * autenticado.
  * 
  * @author Ángel Aragón
  */
 public interface OrderService {
+    /**
+     * Obtiene todos los pedidos del usuario autenticado.
+     *
+     * @return lista de pedidos del usuario
+     */
+    List<Order> getAllOrdersAuthUser();
+
+    /**
+     * Obtiene un pedido específico del usuario autenticado por su ID.
+     *
+     * @param id el identificador del pedido
+     * @return el pedido encontrado, o null si no existe o no pertenece al usuario
+     */
+    Optional<Order> getOrderByIdAuthUser(Long id);
+
+    /**
+     * Busca un pedido por su ID.
+     *
+     * @param id el identificador del pedido
+     * @return el pedido encontrado, o null si no existe
+     */
+    Optional<Order> findById(Long id);
 
     /**
      * Crea un nuevo pedido para el usuario autenticado.
      *
-     * @param orderRequestDTO datos del pedido
-     * @return pedido creado
+     * @param dto el pedido a crear
+     * @return el pedido creado
      */
-    OrderResponseDTO create(OrderRequestDTO orderRequestDTO);
+    Order create(OrderRequestDTO dto);
 
     /**
-     * Obtiene todos los pedidos del usuario autenticado.
+     * Elimina un pedido del usuario autenticado por su ID.
      *
-     * @return lista de pedidos
-     */
-    List<OrderResponseDTO> findByAuthenticatedUser();
-
-    /**
-     * Elimina un pedido por su ID si pertenece al usuario autenticado.
-     *
-     * @param orderId identificador del pedido
-     */
-    boolean delete(Long orderId);
-
-    /**
-     * Busca un pedido por su ID, verificando que pertenezca al usuario autenticado.
-     *
-     * @param id identificador del pedido
-     * @return DTO del pedido si pertenece al usuario
-     */
-    OrderResponseDTO findById(Long id);
-
-    /**
-     * Busca un pedido por su ID, verificando que pertenezca al usuario autenticado.
-     *
-     * @param id identificador del pedido
-     * @return DTO del pedido si pertenece al usuario
-     */
-    OrderResponseDTO findByIdAndUser(Long id);
-
-    /**
-     * Actualiza un pedido existente.
-     *
-     * @param id              identificador del pedido a actualizar
-     * @param orderRequestDTO nuevos datos del pedido
-     * @return DTO del pedido actualizado
-     */
-    OrderResponseDTO update(Long id, OrderRequestDTO orderRequestDTO);
-
-    /**
-     * Elimina un pedido por su ID y el usuario asociado.
-     *
-     * @param id   identificador del pedido
-     * @param user usuario autenticado
+     * @param id el identificador del pedido a eliminar
      * @return true si se eliminó correctamente, false si no existía o no pertenecía
      *         al usuario
      */
-    boolean deleteByIdAndUser(Long id, User user);
+    boolean delete(Long id);
+
+    /**
+     * Actualiza un pedido existente del usuario autenticado.
+     *
+     * @param id    el identificador del pedido a actualizar
+     * @param order los nuevos datos del pedido
+     * @return el pedido actualizado, o null si no existe o no pertenece al usuario
+     */
+    Order update(Long id, Order order);
+
 }

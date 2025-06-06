@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import com.traumaticevolutions.tevosales_backend.model.enums.OrderStatus;
+
 /**
  * DTO request de {@code Order} para representar los datos de un nuevo pedido.
  * Incluye la dirección de envío y los productos solicitados.
@@ -27,4 +29,7 @@ public class OrderRequestDTO {
 
     @NotNull(message = "Debe incluir al menos un producto en el pedido")
     private List<OrderItemRequestDTO> items;
+
+    @NotNull(message = "El estado del pedido es obligatorio")
+    private OrderStatus status;
 }

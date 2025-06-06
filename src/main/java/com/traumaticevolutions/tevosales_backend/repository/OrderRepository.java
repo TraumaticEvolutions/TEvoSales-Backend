@@ -1,6 +1,5 @@
 package com.traumaticevolutions.tevosales_backend.repository;
 
-import com.traumaticevolutions.tevosales_backend.dto.OrderResponseDTO;
 import com.traumaticevolutions.tevosales_backend.model.Order;
 import com.traumaticevolutions.tevosales_backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

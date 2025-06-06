@@ -32,11 +32,6 @@ public class OrderItemResponseDTO {
     private Integer quantity;
 
     /**
-     * Precio unitario del producto (en el momento del pedido).
-     */
-    private BigDecimal unitPrice;
-
-    /**
      * Subtotal (unitPrice * quantity).
      */
     private BigDecimal subtotal;

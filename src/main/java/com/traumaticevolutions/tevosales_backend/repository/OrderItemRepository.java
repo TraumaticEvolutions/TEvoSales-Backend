@@ -2,7 +2,6 @@ package com.traumaticevolutions.tevosales_backend.repository;
 
 import com.traumaticevolutions.tevosales_backend.model.OrderItem;
 import com.traumaticevolutions.tevosales_backend.model.Order;
-
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +23,12 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
      * @return lista de ítems del pedido
      */
     List<OrderItem> findByOrder(Order order);
+
+    /**
+     * Elimina todos los ítems asociados a un pedido.
+     *
+     * @param order el pedido cuyos ítems se eliminarán
+     */
+    void deleteByOrder(Order order);
+
 }

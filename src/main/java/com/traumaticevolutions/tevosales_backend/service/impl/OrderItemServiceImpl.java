@@ -1,24 +1,21 @@
 package com.traumaticevolutions.tevosales_backend.service.impl;
 
-import com.traumaticevolutions.tevosales_backend.config.MapperConfig;
-import com.traumaticevolutions.tevosales_backend.dto.OrderItemRequestDTO;
-import com.traumaticevolutions.tevosales_backend.dto.OrderItemResponseDTO;
 import com.traumaticevolutions.tevosales_backend.model.Order;
 import com.traumaticevolutions.tevosales_backend.model.OrderItem;
 import com.traumaticevolutions.tevosales_backend.model.User;
 import com.traumaticevolutions.tevosales_backend.repository.OrderItemRepository;
 import com.traumaticevolutions.tevosales_backend.repository.OrderRepository;
+import com.traumaticevolutions.tevosales_backend.repository.UserRepository;
 import com.traumaticevolutions.tevosales_backend.service.OrderItemService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 /**
  * Implementación del servicio {@link OrderItemService}.
@@ -32,20 +29,17 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
-    private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
     /**
-     * Guarda un ítem de pedido.
+     * Crea un nuevo ítem de pedido.
      *
-     * @param orderItemRequestDTO el ítem a guardar
+     * @param orderItem el ítem a guardar
      * @return el ítem guardado
      */
     @Override
-    public OrderItemResponseDTO create(OrderItemRequestDTO dto) {
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        OrderItem orderItem = modelMapper.map(dto, OrderItem.class);
-        orderItemRepository.save(orderItem);
-        return modelMapper.map(orderItemRepository, OrderItemResponseDTO.class);
+    public OrderItem create(OrderItem orderItem) {
+        return orderItemRepository.save(orderItem);
     }
 
     /**
@@ -55,43 +49,29 @@ public class OrderItemServiceImpl implements OrderItemService {
      * @return ítems guardados
      */
     @Override
-    public List<OrderItemResponseDTO> saveAll(List<OrderItemRequestDTO> orderItems) {
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        List<OrderItem> orderItemsToSave = orderItems.stream()
-                .map(dto -> modelMapper.map(dto, OrderItem.class))
-                .collect(Collectors.toList());
-        orderItemsToSave.forEach(item -> {
-            BigDecimal subtotal = item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-            item.setSubtotal(subtotal);
-        });
-        orderItemRepository.saveAll(orderItemsToSave);
-        return orderItemsToSave.stream()
-                .map(item -> modelMapper.map(item, OrderItemResponseDTO.class))
-                .collect(Collectors.toList());
+    public List<OrderItem> saveAll(List<OrderItem> orderItems) {
+        return orderItemRepository.saveAll(orderItems);
     }
 
     /**
      * Recupera los ítems de un pedido del usuario autenticado.
      *
      * @param orderId identificador del pedido
-     * @return lista de DTOs de ítems
+     * @return lista de ítems
      */
     @Override
-    public List<OrderItemResponseDTO> findByOrderId(Long orderId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+    public List<OrderItem> findByOrderId(Long orderId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Pedido no encontrado"));
 
         if (!order.getUser().getId().equals(user.getId())) {
-            throw new SecurityException("Este pedido no te pertenece.");
+            throw new EntityNotFoundException("No tienes permiso para acceder a este pedido");
         }
 
-        List<OrderItem> items = orderItemRepository.findByOrder(order);
-
-        return items.stream()
-                .map(item -> modelMapper.map(item, OrderItemResponseDTO.class))
-                .collect(Collectors.toList());
+        return orderItemRepository.findByOrder(order);
     }
 
     /**
@@ -115,6 +95,18 @@ public class OrderItemServiceImpl implements OrderItemService {
         item.setSubtotal(subtotal);
 
         return item;
+    }
+
+    /**
+     * Elimina todos los ítems asociados a un pedido.
+     *
+     * @param orderId el ID del pedido cuyos ítems se eliminarán
+     */
+    @Override
+    public void deleteByOrderId(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido no encontrado con ID: " + orderId));
+        orderItemRepository.deleteByOrder(order);
     }
 
 }

@@ -43,15 +43,18 @@ public class SecurityConfig {
     }
 
     /**
-     * Bean que define la cadena de filtros de seguridad.
+     * Configuración de seguridad HTTP.
      * 
-     * - Desactiva CSRF para pruebas.
-     * - Permite el acceso público al endpoint de registro de usuario.
-     * - Protege el resto de los endpoints requiriendo autenticación JWT.
+     * Define las reglas de acceso a los endpoints de la API:
+     * - Permite acceso público a registro y login.
+     * - Permite acceso público a productos solo para peticiones GET.
+     * - Restringe modificaciones y eliminaciones de pedidos y order-items a
+     * usuarios con rol ADMIN.
+     * - Requiere autenticación para el resto de peticiones.
      * 
-     * @param http Objeto HttpSecurity para configurar la seguridad.
-     * @return SecurityFilterChain configurada.
-     * @throws Exception Excepción en caso de error de configuración.
+     * @param http objeto HttpSecurity para configurar la seguridad HTTP.
+     * @return SecurityFilterChain configurado.
+     * @throws Exception si ocurre un error al configurar la seguridad.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -60,9 +63,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/register", "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/products").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/order-items/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/order-items/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }

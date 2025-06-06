@@ -1,11 +1,9 @@
 package com.traumaticevolutions.tevosales_backend.service.impl;
 
-import com.traumaticevolutions.tevosales_backend.dto.ProductRequestDTO;
 import com.traumaticevolutions.tevosales_backend.model.Product;
 import com.traumaticevolutions.tevosales_backend.repository.ProductRepository;
 import com.traumaticevolutions.tevosales_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,7 +21,6 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final ModelMapper modelMapper;
 
     /**
      * Obtiene todos los productos disponibles.
@@ -54,22 +51,29 @@ public class ProductServiceImpl implements ProductService {
      * @return producto creado en formato {@code Optional<Product>}
      */
     @Override
-    public Optional<Product> create(ProductRequestDTO dto) {
-        Product product = modelMapper.map(dto, Product.class);
+    public Optional<Product> create(Product product) {
         return Optional.of(productRepository.save(product));
     }
 
+    /**
+     * Actualiza un producto existente con los nuevos datos proporcionados.
+     *
+     * @param id   identificador del producto a actualizar
+     * @param newP objeto con los nuevos datos del producto
+     * @return producto actualizado en formato {@code Optional<Product>}
+     * @throws NoSuchElementException si el producto no existe
+     */
     @Override
-    public Optional<Product> update(Long id, ProductRequestDTO dto) {
+    public Optional<Product> update(Long id, Product newP) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Producto no encontrado"));
-        existing.setName(dto.getName());
-        existing.setDescription(dto.getDescription());
-        existing.setPrice(dto.getPrice());
-        existing.setCategory(dto.getCategory());
-        existing.setImagePath(dto.getImagePath());
-        existing.setStock(dto.getStock());
-        existing.setActive(dto.getActive());
+        existing.setName(newP.getName());
+        existing.setDescription(newP.getDescription());
+        existing.setPrice(newP.getPrice());
+        existing.setCategory(newP.getCategory());
+        existing.setImagePath(newP.getImagePath());
+        existing.setStock(newP.getStock());
+        existing.setActive(newP.getActive());
         return Optional.of(productRepository.save(existing));
     }
 
