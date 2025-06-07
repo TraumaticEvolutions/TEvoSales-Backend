@@ -1,5 +1,7 @@
 package com.traumaticevolutions.tevosales_backend.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +11,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import com.traumaticevolutions.tevosales_backend.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +24,8 @@ import lombok.RequiredArgsConstructor;
  * - Protege el resto de endpoints.
  * - Codificación de contraseñas usando BCrypt.
  * - Habilitamos anotaciones {@code @PreAuthorize} y con
+ * - CORS configurado para permitir solicitudes desde el frontend en
+ * {@link http://localhost:5173}.
  * {@code @EnableMethodSecurity(prePostEnabled = true)}.
  * 
  * @author Ángel Aragón
@@ -71,6 +79,26 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * Configuración CORS para permitir solicitudes desde el frontend.
+     * 
+     * Permite solicitudes desde http://localhost:5173 con los métodos GET, POST,
+     * PUT, DELETE.
+     * 
+     * @return CorsConfigurationSource configurado.
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }
