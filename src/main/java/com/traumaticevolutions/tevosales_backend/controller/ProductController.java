@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -43,6 +45,13 @@ public class ProductController {
                 .toList());
     }
 
+    /**
+     * Devuelve todos los productos paginados.
+     * 
+     * @param page Número de página (0 por defecto)
+     * @param size Tamaño de página (10 por defecto)
+     * @return Página de productos en formato {@code ProductResponseDTO}
+     */
     @GetMapping("/paged")
     public ResponseEntity<Page<ProductResponseDTO>> getAllPaged(
             @RequestParam(defaultValue = "0") int page,
@@ -51,6 +60,22 @@ public class ProductController {
         Page<Product> products = productService.findAllPaged(pageable);
         Page<ProductResponseDTO> dtoPage = products.map(product -> modelMapper.map(product, ProductResponseDTO.class));
         return ResponseEntity.ok(dtoPage);
+    }
+
+    /**
+     * Devuelve productos aleatorios (4).
+     * 
+     * @return Lista de productos aleatorios en formato {@code ProductResponseDTO}
+     */
+    @GetMapping("/random")
+    public ResponseEntity<List<ProductResponseDTO>> getRandomProducts() {
+        List<Product> allProducts = productService.findAll();
+        Collections.shuffle(allProducts);
+        List<Product> randomProducts = allProducts.stream().limit(4).toList();
+        List<ProductResponseDTO> response = randomProducts.stream()
+                .map(product -> modelMapper.map(product, ProductResponseDTO.class))
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     /**
