@@ -179,11 +179,12 @@ public class OrderServiceImpl implements OrderService {
      * @param id el identificador del pedido
      * @return el pedido encontrado, o null si no existe
      */
-    @
-
+    
+    @Override
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);
     }
+
     /**
      * Obtiene todos los pedidos del usuario autenticado de forma paginada.
      *
