@@ -95,7 +95,10 @@ public class OrderServiceImpl implements OrderService {
             Product product = productRepository.findById(itemDTO.getProductId())
                     .orElseThrow(() -> new NoSuchElementException(
                             "Producto no encontrado con ID: " + itemDTO.getProductId()));
-
+            int newStock = product.getStock() - itemDTO.getQuantity();
+            if (newStock < 0) {
+                throw new IllegalArgumentException("Stock insuficiente para el producto: " + product.getName());
+            }
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(product);
             orderItem.setQuantity(itemDTO.getQuantity());
@@ -176,7 +179,8 @@ public class OrderServiceImpl implements OrderService {
      * @param id el identificador del pedido
      * @return el pedido encontrado, o null si no existe
      */
-    @Override
+    @
+
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);
     }
