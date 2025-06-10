@@ -38,25 +38,41 @@ public class UserController {
      * @return Usuario registrado como DTO de respuesta.
      */
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userRequestDTO) {
-        Optional<Role> role = roleService.findByName("CLIENTE");
+    public ResponseEntity<?> registerUser(@RequestBody UserRequestDTO userRequestDTO) {
+        Optional<Role> role = roleService.findByName("ROLE_CLIENTE");
 
         if (role.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Rol CLIENTE no encontrado");
+        }
+
+        if (userService.findByUsername(userRequestDTO.getUsername()).isPresent()) {
+            return ResponseEntity.status(409).body("El nombre de usuario ya está en uso");
+        }
+        if (userService.findByEmail(userRequestDTO.getEmail()).isPresent()) {
+            return ResponseEntity.status(409).body("El email ya está en uso");
+        }
+        // Si tienes NIF único:
+        if (userService.findByNif(userRequestDTO.getNif()).isPresent()) {
+            return ResponseEntity.status(409).body("El NIF ya está en uso");
         }
 
         User user = modelMapper.map(userRequestDTO, User.class);
         user.getRoles().add(role.get());
 
-        User savedUser = userService.saveUser(user);
-        UserResponseDTO responseDTO = modelMapper.map(savedUser, UserResponseDTO.class);
-
-        return ResponseEntity.ok(responseDTO);
+        try {
+            User savedUser = userService.saveUser(user);
+            UserResponseDTO responseDTO = modelMapper.map(savedUser, UserResponseDTO.class);
+            return ResponseEntity.ok(responseDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error interno al registrar el usuario");
+        }
     }
 
     /**
      * Endpoint para obtener todos los usuarios.
-     * Solo podrán acceder usuario con el rol admin usando {@code @PreAuthorize("hasRole('ADMIN')")}.
+     * Solo podrán acceder usuario con el rol admin usando
+     * {@code @PreAuthorize("hasRole('ADMIN')")}.
+     * 
      * @return Lista de usuarios en formato DTO.
      */
     @GetMapping
