@@ -23,6 +23,17 @@ public interface ProductService {
     List<Product> findAll();
 
     /**
+     * Obtiene todos los productos disponibles paginados, pudiendo filtrar por
+     * nombre y categoría.
+     *
+     * @param name     nombre del producto a buscar (opcional)
+     * @param category categoría del producto a buscar (opcional)
+     * @param pageable objeto que contiene la información de paginación
+     * @return lista de productos en formato {@code Page<Product>}
+     */
+    Page<Product> searchProducts(String name, String category, Pageable pageable);
+
+    /**
      * Busca un producto por su ID.
      *
      * @param id el identificador del producto

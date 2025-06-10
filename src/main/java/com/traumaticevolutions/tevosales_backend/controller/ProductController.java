@@ -48,16 +48,20 @@ public class ProductController {
     /**
      * Devuelve todos los productos paginados.
      * 
+     * @param name Nombre del producto a filtrar (opcional)
+     * @param category Categoría del producto a filtrar (opcional)
      * @param page Número de página (0 por defecto)
      * @param size Tamaño de página (10 por defecto)
      * @return Página de productos en formato {@code ProductResponseDTO}
      */
     @GetMapping("/paged")
     public ResponseEntity<Page<ProductResponseDTO>> getAllPaged(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> products = productService.findAllPaged(pageable);
+        Page<Product> products = productService.searchProducts(name, category, pageable);
         Page<ProductResponseDTO> dtoPage = products.map(product -> modelMapper.map(product, ProductResponseDTO.class));
         return ResponseEntity.ok(dtoPage);
     }

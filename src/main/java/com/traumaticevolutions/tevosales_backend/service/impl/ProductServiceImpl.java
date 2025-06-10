@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,13 +28,35 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Obtiene todos los productos disponibles.
-     * 
+     *
      * @return lista de productos en formato {@code List<Product>}
      */
     @Override
     public List<Product> findAll() {
         return productRepository.findAll();
+    }
 
+    /**
+     * Obtiene todos los productos disponibles, pudiendo filtrar por nombre y
+     * categoría.
+     *
+     * @param name     nombre del producto a buscar (opcional)
+     * @param category categoría del producto a buscar (opcional)
+     * @param pageable objeto que contiene la información de paginación
+     * @return lista de productos en formato {@code Page<Product>}
+     */
+    @Override
+    public Page<Product> searchProducts(String name, String category, Pageable pageable) {
+        Specification<Product> spec = Specification.where(null);
+
+        if (name != null && !name.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+        if (category != null && !category.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.equal(cb.lower(root.get("category")), category.toLowerCase()));
+        }
+
+        return productRepository.findAll(spec, pageable);
     }
 
     /**
