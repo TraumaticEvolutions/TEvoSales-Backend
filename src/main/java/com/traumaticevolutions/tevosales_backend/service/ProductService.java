@@ -28,10 +28,11 @@ public interface ProductService {
      *
      * @param name     nombre del producto a buscar (opcional)
      * @param category categoría del producto a buscar (opcional)
+     * @param brand    marca del producto a buscar (opcional)
      * @param pageable objeto que contiene la información de paginación
      * @return lista de productos en formato {@code Page<Product>}
      */
-    Page<Product> searchProducts(String name, String category, Pageable pageable);
+    Page<Product> searchProducts(String name, String category, String brand, Pageable pageable);
 
     /**
      * Busca un producto por su ID.

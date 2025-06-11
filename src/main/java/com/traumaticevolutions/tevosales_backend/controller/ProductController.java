@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -48,22 +49,55 @@ public class ProductController {
     /**
      * Devuelve todos los productos paginados.
      * 
-     * @param name Nombre del producto a filtrar (opcional)
+     * @param name     Nombre del producto a filtrar (opcional)
      * @param category Categoría del producto a filtrar (opcional)
-     * @param page Número de página (0 por defecto)
-     * @param size Tamaño de página (10 por defecto)
+     * @param page     Número de página (0 por defecto)
+     * @param size     Tamaño de página (10 por defecto)
+     * @param sort     Criterios de ordenación (formato: campo,dirección)
+     *                 Dirección puede ser 'asc' o 'desc' (por defecto 'id,asc')
+     * @throws IllegalArgumentException si los parámetros de ordenación son
+     *                                  inválidos
+     * @throws NoSuchElementException   si no se encuentran productos
      * @return Página de productos en formato {@code ProductResponseDTO}
+     * @author Ángel Aragón
+     * 
      */
     @GetMapping("/paged")
-    public ResponseEntity<Page<ProductResponseDTO>> getAllPaged(
+    public ResponseEntity<?> getAllPaged(
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String brand, // <-- Añadido
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Product> products = productService.searchProducts(name, category, pageable);
-        Page<ProductResponseDTO> dtoPage = products.map(product -> modelMapper.map(product, ProductResponseDTO.class));
-        return ResponseEntity.ok(dtoPage);
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "id,asc") String sort) {
+        try {
+            if (name != null && name.isBlank())
+                name = null;
+            if (brand != null && brand.isBlank())
+                brand = null;
+            if (category != null && category.isBlank())
+                category = null;
+
+            String[] sortParts = sort.split(",");
+            Sort sortObj;
+            if (sortParts.length == 2) {
+                sortObj = Sort.by(new Sort.Order(Sort.Direction.fromString(sortParts[1]), sortParts[0]));
+            } else if (sortParts.length == 1 && !sortParts[0].isBlank()) {
+                sortObj = Sort.by(sortParts[0]).ascending();
+            } else {
+                sortObj = Sort.by("id").ascending();
+            }
+
+            Pageable pageable = PageRequest.of(page, size, sortObj);
+            Page<Product> products = productService.searchProducts(name, category, brand, pageable); // <-- Añade brand
+            Page<ProductResponseDTO> dtoPage = products
+                    .map(product -> modelMapper.map(product, ProductResponseDTO.class));
+            return ResponseEntity.ok(dtoPage);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error en los parámetros de ordenación: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error interno al obtener productos: " + e.getMessage());
+        }
     }
 
     /**
