@@ -33,6 +33,12 @@ public class UserController {
 
     /**
      * Endpoint para registrar un nuevo usuario.
+     * Solo podrán acceder usuarios sin autenticación.
+     * Registra al usuario con el rol "ROLE_CLIENTE".
+     * Valida que el nombre de usuario, email y NIF no estén en uso.
+     * 
+     * @throws IllegalArgumentException si el nombre de usuario, email o NIF ya
+     *                                  están en uso.
      *
      * @param userRequestDTO Datos del usuario a registrar.
      * @return Usuario registrado como DTO de respuesta.
@@ -55,7 +61,18 @@ public class UserController {
         if (userService.findByNif(userRequestDTO.getNif()).isPresent()) {
             return ResponseEntity.status(409).body("El NIF ya está en uso");
         }
-
+        if (userService.findByUsername(userRequestDTO.getUsername()).isPresent()) {
+            return ResponseEntity.status(409)
+                    .body(java.util.Collections.singletonMap("error", "El nombre de usuario ya está en uso"));
+        }
+        if (userService.findByEmail(userRequestDTO.getEmail()).isPresent()) {
+            return ResponseEntity.status(409)
+                    .body(java.util.Collections.singletonMap("error", "El email ya está en uso"));
+        }
+        if (userService.findByNif(userRequestDTO.getNif()).isPresent()) {
+            return ResponseEntity.status(409)
+                    .body(java.util.Collections.singletonMap("error", "El NIF ya está en uso"));
+        }
         User user = modelMapper.map(userRequestDTO, User.class);
         user.getRoles().add(role.get());
 
