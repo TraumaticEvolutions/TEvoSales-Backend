@@ -65,7 +65,7 @@ public class ProductController {
     @GetMapping("/paged")
     public ResponseEntity<?> getAllPaged(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String brand, // <-- Añadido
+            @RequestParam(required = false) String brand,
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
@@ -89,7 +89,7 @@ public class ProductController {
             }
 
             Pageable pageable = PageRequest.of(page, size, sortObj);
-            Page<Product> products = productService.searchProducts(name, category, brand, pageable); // <-- Añade brand
+            Page<Product> products = productService.searchProducts(name, category, brand, pageable);
             Page<ProductResponseDTO> dtoPage = products
                     .map(product -> modelMapper.map(product, ProductResponseDTO.class));
             return ResponseEntity.ok(dtoPage);

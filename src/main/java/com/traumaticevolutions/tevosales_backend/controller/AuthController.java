@@ -15,6 +15,7 @@ import java.util.Optional;
 /**
  * Controlador REST encargado de la autenticación de usuarios.
  * Valida las credenciales y devuelve un token JWT si son correctas.
+ * 
  * @author Ángel Aragón
  */
 @RestController
@@ -41,7 +42,8 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
 
-        String token = jwtService.generateToken(user.get().getUsername());
+        String token = jwtService.generateToken(user.get().getUsername(),
+                user.get().getRoles().stream().map(role -> role.getName()).toList());
         return ResponseEntity.ok(new AuthResponse(token));
     }
 }

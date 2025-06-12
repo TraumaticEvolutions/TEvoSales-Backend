@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Servicio encargado de generar y validar tokens JWT usando el username.
+ * 
  * @author Ángel Aragón
  */
 @Service
@@ -22,9 +24,10 @@ public class JwtService {
      * @param username Nombre de usuario autenticado.
      * @return Token JWT generado.
      */
-    public String generateToken(String username) {
+    public String generateToken(String username, List<String> roles) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(secretKey)
