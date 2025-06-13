@@ -38,6 +38,11 @@ public class OrderResponseDTO {
     private String floor;
 
     /**
+     * Código postal de la dirección de entrega.
+     */
+    private String postalCode;
+
+    /**
      * Estado actual del pedido determinado por el enum {@link OrderStatus}.
      */
     private OrderStatus status;

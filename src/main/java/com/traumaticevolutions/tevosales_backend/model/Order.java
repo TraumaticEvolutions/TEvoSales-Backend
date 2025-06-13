@@ -55,6 +55,12 @@ public class Order {
     private String floor;
 
     /**
+     * Código postal del domicilio.
+     * Puede ser nulo si no se proporciona.
+     */
+    private String postalCode;
+
+    /**
      * Estado actual del pedido.
      * Numerado como {@link OrderStatus}:
      * <ul>
