@@ -18,6 +18,7 @@ import com.traumaticevolutions.tevosales_backend.model.Order;
 import com.traumaticevolutions.tevosales_backend.model.OrderItem;
 import com.traumaticevolutions.tevosales_backend.model.Product;
 import com.traumaticevolutions.tevosales_backend.model.User;
+import com.traumaticevolutions.tevosales_backend.model.enums.OrderStatus;
 import com.traumaticevolutions.tevosales_backend.repository.OrderRepository;
 import com.traumaticevolutions.tevosales_backend.repository.ProductRepository;
 import com.traumaticevolutions.tevosales_backend.repository.UserRepository;
@@ -40,19 +41,6 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
 
     /**
-     * Obtiene todos los pedidos del usuario autenticado.
-     *
-     * @return lista de pedidos del usuario
-     */
-    @Override
-    public List<Order> getAllOrdersAuthUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
-        return orderRepository.findByUser(user);
-    }
-
-    /**
      * Obtiene un pedido específico del usuario autenticado por su ID.
      *
      * @param id el identificador del pedido
@@ -73,7 +61,8 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Crea un nuevo pedido para el usuario autenticado.
-     * 
+     * Valida el stock de los productos y actualiza sus cantidades.
+     *
      * @param dto el pedido a crear
      * @return el pedido creado
      */
@@ -87,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
         order.setAddress(dto.getAddress());
         order.setNumber(dto.getNumber());
         order.setFloor(dto.getFloor());
+        order.setPostalCode(dto.getPostalCode());
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -109,6 +99,8 @@ public class OrderServiceImpl implements OrderService {
 
             total = total.add(subtotal);
             orderItems.add(orderItem);
+            product.setStock(newStock);
+            productRepository.save(product);
         }
 
         order.setOrderItems(new java.util.HashSet<>(orderItems));
@@ -131,45 +123,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * Actualiza un pedido existente del usuario autenticado.
+     * Actualiza el estado de un pedido por su ID.
      *
-     * @param id    el identificador del pedido a actualizar
-     * @param order los nuevos datos del pedido
-     * @return el pedido actualizado, o null si no existe o no pertenece al usuario
+     * @param id     el identificador del pedido
+     * @param status el nuevo estado del pedido
+     * @return el pedido actualizado con el nuevo estado
      */
     @Override
-    public Order update(Long id, Order newO) {
+    public Order updateStatus(Long id, OrderStatus status) {
         Order existing = orderRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Pedido no encontrado"));
-
-        if (newO.getStatus() != null) {
-            existing.setStatus(newO.getStatus());
-        }
-
-        if (newO.getAddress() != null && !newO.getAddress().trim().isEmpty()) {
-            existing.setAddress(newO.getAddress());
-        }
-
-        if (newO.getNumber() != null && !newO.getNumber().trim().isEmpty()) {
-            existing.setNumber(newO.getNumber());
-        }
-
-        if (newO.getFloor() != null && !newO.getFloor().trim().isEmpty()) {
-            existing.setFloor(newO.getFloor());
-        }
-
-        if (newO.getOrderItems() != null && !newO.getOrderItems().isEmpty()) {
-            existing.setOrderItems(newO.getOrderItems());
-        }
-
-        if (newO.getTotal() != null) {
-            existing.setTotal(newO.getTotal());
-        }
-
-        if (newO.getUser() != null) {
-            existing.setUser(newO.getUser());
-        }
-
+        existing.setStatus(status);
         return orderRepository.save(existing);
     }
 
@@ -179,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
      * @param id el identificador del pedido
      * @return el pedido encontrado, o null si no existe
      */
-    
+
     @Override
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);

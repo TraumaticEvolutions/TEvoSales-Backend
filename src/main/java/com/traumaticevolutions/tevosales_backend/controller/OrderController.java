@@ -3,6 +3,7 @@ package com.traumaticevolutions.tevosales_backend.controller;
 import com.traumaticevolutions.tevosales_backend.dto.OrderRequestDTO;
 import com.traumaticevolutions.tevosales_backend.dto.OrderResponseDTO;
 import com.traumaticevolutions.tevosales_backend.model.Order;
+import com.traumaticevolutions.tevosales_backend.model.enums.OrderStatus;
 import com.traumaticevolutions.tevosales_backend.service.OrderService;
 import lombok.RequiredArgsConstructor;
 
@@ -87,18 +88,19 @@ public class OrderController {
     }
 
     /**
-     * Actualiza un pedido del usuario autenticado.
+     * Actualiza el estado de un pedido por su ID.
      * 
-     * @param id         ID del pedido a actualizar
-     * @param requestDTO Nuevos datos del pedido
+     * @param id     ID del pedido a actualizar
+     * @param status Nuevo estado del pedido
      * @return Pedido actualizado en formato {@code OrderResponseDTO}
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable Long id,
-            @RequestBody OrderRequestDTO requestDTO) {
-        Order order = modelMapper.map(requestDTO, Order.class);
-        OrderResponseDTO updatedOrder = modelMapper.map(orderService.update(id, order), OrderResponseDTO.class);
+    public ResponseEntity<OrderResponseDTO> updateOrderStatus(@PathVariable Long id,
+            @RequestBody String status) {
+        OrderStatus orderStatus = OrderStatus.valueOf(status);
+        OrderResponseDTO updatedOrder = modelMapper.map(orderService.updateStatus(id, orderStatus),
+                OrderResponseDTO.class);
         return ResponseEntity.ok(updatedOrder);
     }
 

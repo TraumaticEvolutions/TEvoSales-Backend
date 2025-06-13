@@ -1,6 +1,5 @@
 package com.traumaticevolutions.tevosales_backend.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -8,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.traumaticevolutions.tevosales_backend.dto.OrderRequestDTO;
 import com.traumaticevolutions.tevosales_backend.model.Order;
+import com.traumaticevolutions.tevosales_backend.model.enums.OrderStatus;
 
 /**
  * Interfaz del servicio para gestionar pedidos.
@@ -17,12 +17,6 @@ import com.traumaticevolutions.tevosales_backend.model.Order;
  * @author Ángel Aragón
  */
 public interface OrderService {
-    /**
-     * Obtiene todos los pedidos del usuario autenticado.
-     *
-     * @return lista de pedidos del usuario
-     */
-    List<Order> getAllOrdersAuthUser();
 
     /**
      * Obtiene todos los pedidos del usuario autenticado de forma paginada.
@@ -66,12 +60,12 @@ public interface OrderService {
     boolean delete(Long id);
 
     /**
-     * Actualiza un pedido existente del usuario autenticado.
+     * Actualiza el estado de un pedido por su ID.
      *
-     * @param id    el identificador del pedido a actualizar
-     * @param order los nuevos datos del pedido
-     * @return el pedido actualizado, o null si no existe o no pertenece al usuario
+     * @param id     el identificador del pedido
+     * @param status el nuevo estado del pedido
+     * @return el pedido actualizado con el nuevo estado
      */
-    Order update(Long id, Order order);
+    Order updateStatus(Long id, OrderStatus status);
 
 }
