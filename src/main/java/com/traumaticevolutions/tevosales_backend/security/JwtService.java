@@ -24,10 +24,11 @@ public class JwtService {
      * @param username Nombre de usuario autenticado.
      * @return Token JWT generado.
      */
-    public String generateToken(String username, List<String> roles) {
+    public String generateToken(String username, List<String> roles, Long id) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("roles", roles)
+                .claim("id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(secretKey)
