@@ -3,6 +3,9 @@ package com.traumaticevolutions.tevosales_backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.traumaticevolutions.tevosales_backend.model.User;
 
 /**
@@ -46,4 +49,14 @@ public interface UserService {
      */
     List<User> getAllUsers();
 
+    /**
+     * Buscar usuarios con filtros aplicados.
+     * @param username Filtro por username.
+     * @param email Filtro por email.
+     * @param nif Filtro por nif.
+     * @param role Filtro por rol.
+     * @param pageable Objeto Pageable para la paginación de resultados.
+     * @return Página de usuarios que coinciden con los filtros.
+     */
+    Page<User> findUsersWithFilters(String username, String email, String nif, String role, Pageable pageable);
 }

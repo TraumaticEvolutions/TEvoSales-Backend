@@ -46,6 +46,7 @@ public class UserSeeder implements CommandLineRunner {
 
         if (userRepository.findByUsername("HUCA").isEmpty()) {
             Optional<Role> entidadRole = roleRepository.findByName("ROLE_ENTIDAD");
+            Optional<Role> clienteRole = roleRepository.findByName("ROLE_CLIENTE");
             if (entidadRole.isPresent()) {
                 User entidad = new User();
                 entidad.setUsername("HUCA");
@@ -53,7 +54,7 @@ public class UserSeeder implements CommandLineRunner {
                 entidad.setEmail("huca@sespa.es");
                 entidad.setNif("Q3369023A");
                 entidad.setPassword(passwordEncoder.encode("huca123"));
-                entidad.setRoles(new HashSet<>(List.of(entidadRole.get())));
+                entidad.setRoles(new HashSet<>(List.of(entidadRole.get(), clienteRole.get())));
                 userRepository.save(entidad);
             }
         }

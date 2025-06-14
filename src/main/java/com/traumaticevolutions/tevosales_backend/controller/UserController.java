@@ -8,13 +8,14 @@ import com.traumaticevolutions.tevosales_backend.service.RoleService;
 import com.traumaticevolutions.tevosales_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Controlador REST para la gestión de usuarios.
@@ -57,21 +58,8 @@ public class UserController {
         if (userService.findByEmail(userRequestDTO.getEmail()).isPresent()) {
             return ResponseEntity.status(409).body("El email ya está en uso");
         }
-        // Si tienes NIF único:
         if (userService.findByNif(userRequestDTO.getNif()).isPresent()) {
             return ResponseEntity.status(409).body("El NIF ya está en uso");
-        }
-        if (userService.findByUsername(userRequestDTO.getUsername()).isPresent()) {
-            return ResponseEntity.status(409)
-                    .body(java.util.Collections.singletonMap("error", "El nombre de usuario ya está en uso"));
-        }
-        if (userService.findByEmail(userRequestDTO.getEmail()).isPresent()) {
-            return ResponseEntity.status(409)
-                    .body(java.util.Collections.singletonMap("error", "El email ya está en uso"));
-        }
-        if (userService.findByNif(userRequestDTO.getNif()).isPresent()) {
-            return ResponseEntity.status(409)
-                    .body(java.util.Collections.singletonMap("error", "El NIF ya está en uso"));
         }
         User user = modelMapper.map(userRequestDTO, User.class);
         user.getRoles().add(role.get());
@@ -83,25 +71,6 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error interno al registrar el usuario");
         }
-    }
-
-    /**
-     * Endpoint para obtener todos los usuarios.
-     * Solo podrán acceder usuario con el rol admin usando
-     * {@code @PreAuthorize("hasRole('ADMIN')")}.
-     * 
-     * @return Lista de usuarios en formato DTO.
-     */
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-
-        List<UserResponseDTO> responseList = users.stream()
-                .map(user -> modelMapper.map(user, UserResponseDTO.class))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseList);
     }
 
     /**
@@ -118,5 +87,33 @@ public class UserController {
             UserResponseDTO dto = modelMapper.map(value, UserResponseDTO.class);
             return ResponseEntity.ok(dto);
         }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Endpoint para obtener todos los usuarios con paginación y filtros.
+     * Solo podrán acceder usuario con el rol admin usando
+     * {@code @PreAuthorize("hasRole('ADMIN')")}.
+     * 
+     * @param page     Número de página, comienza en 0.
+     * @param size     Tamaño de la página.
+     * @param username Filtro por nombre de usuario.
+     * @param email    Filtro por email.
+     * @param nif      Filtro por NIF.
+     * @param role     Filtro por rol (nombre del rol, ej: "ROLE_ADMIN").
+     * @return Página de usuarios en formato DTO.
+     */
+    @GetMapping("/paged")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsersPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String nif,
+            @RequestParam(required = false) String role) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("username").ascending());
+        Page<User> users = userService.findUsersWithFilters(username, email, nif, role, pageable);
+        Page<UserResponseDTO> dtoPage = users.map(user -> modelMapper.map(user, UserResponseDTO.class));
+        return ResponseEntity.ok(dtoPage);
     }
 }

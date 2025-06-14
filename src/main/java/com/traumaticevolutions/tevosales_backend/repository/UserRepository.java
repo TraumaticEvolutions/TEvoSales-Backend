@@ -3,6 +3,7 @@ package com.traumaticevolutions.tevosales_backend.repository;
 import com.traumaticevolutions.tevosales_backend.model.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,7 +15,7 @@ import java.util.Optional;
  * @author Ángel Aragón
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     /**
      * Busca un usuario por su email.

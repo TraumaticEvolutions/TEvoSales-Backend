@@ -1,12 +1,18 @@
 package com.traumaticevolutions.tevosales_backend.service.impl;
 
+import com.traumaticevolutions.tevosales_backend.model.Role;
 import com.traumaticevolutions.tevosales_backend.model.User;
 import com.traumaticevolutions.tevosales_backend.repository.UserRepository;
 import com.traumaticevolutions.tevosales_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,5 +87,38 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    /**
+     * Busca usuarios con filtros aplicados a nombre de usuario, email, NIF y rol.
+     * 
+     * @param username Nombre de usuario.
+     * @param email Email del usuario.
+     * @param nif Número de identificación fiscal.
+     * @param role Rol del usuario.
+     * @param pageable Objeto Pageable con información de paginación.
+     * @return Página de usuarios que coinciden con los filtros.
+     */
+    @Override
+    public Page<User> findUsersWithFilters(String username, String email, String nif, String role, Pageable pageable) {
+        Specification<User> spec = Specification.where(null);
+
+        if (username != null && !username.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("username")), "%" + username.toLowerCase() + "%"));
+        }
+        if (email != null && !email.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+        }
+        if (nif != null && !nif.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("nif")), "%" + nif.toLowerCase() + "%"));
+        }
+        if (role != null && !role.isBlank()) {
+            spec = spec.and((root, query, cb) -> {
+                Join<User, Role> join = root.join("roles", JoinType.LEFT);
+                return cb.equal(join.get("name"), role);
+            });
+        }
+
+        return userRepository.findAll(spec, pageable);
     }
 }
