@@ -16,7 +16,8 @@ import java.util.Optional;
  * incluyendo encriptación de contraseñas y consultas personalizadas.
  * 
  * Esta clase se inyecta automáticamente en los controladores mediante Service.
- * Utiliza Lombok con {@link RequiredArgsConstructor} para la inyección de dependencias.
+ * Utiliza Lombok con {@link RequiredArgsConstructor} para la inyección de
+ * dependencias.
  * 
  * @author Ángel Aragón
  */

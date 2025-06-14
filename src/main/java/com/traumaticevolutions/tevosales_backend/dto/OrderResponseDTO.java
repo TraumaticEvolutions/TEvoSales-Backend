@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -56,4 +57,9 @@ public class OrderResponseDTO {
      * Lista de ítems incluidos en el pedido.
      */
     private List<OrderItemResponseDTO> items;
+
+    /**
+     * Fecha y hora en que se creó el pedido.
+     */
+    private LocalDateTime createdAt;
 }

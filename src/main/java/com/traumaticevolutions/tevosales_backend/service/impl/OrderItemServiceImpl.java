@@ -3,6 +3,7 @@ package com.traumaticevolutions.tevosales_backend.service.impl;
 import com.traumaticevolutions.tevosales_backend.model.Order;
 import com.traumaticevolutions.tevosales_backend.model.OrderItem;
 import com.traumaticevolutions.tevosales_backend.model.User;
+import com.traumaticevolutions.tevosales_backend.model.Product;
 import com.traumaticevolutions.tevosales_backend.repository.OrderItemRepository;
 import com.traumaticevolutions.tevosales_backend.repository.OrderRepository;
 import com.traumaticevolutions.tevosales_backend.repository.UserRepository;
@@ -84,7 +85,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * @param quantity la cantidad solicitada
      * @return el ítem creado con subtotal
      */
-    public OrderItem buildOrderItemFrom(Order order, com.traumaticevolutions.tevosales_backend.model.Product product,
+    public OrderItem buildOrderItemFrom(Order order, Product product,
             int quantity) {
         OrderItem item = new OrderItem();
         item.setOrder(order);

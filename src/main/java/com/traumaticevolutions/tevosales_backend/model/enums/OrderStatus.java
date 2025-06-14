@@ -12,25 +12,25 @@ public enum OrderStatus {
     /**
      * El pedido ha sido creado pero aún no procesado.
      */
-    PENDING,
+    PENDIENTE,
 
     /**
      * El pedido ha sido confirmado y se está preparando.
      */
-    CONFIRMED,
+    CONFIRMADO,
 
     /**
      * El pedido ha sido enviado al cliente.
      */
-    SHIPPED,
+    ENVIADO,
 
     /**
      * El pedido ha sido entregado correctamente.
      */
-    DELIVERED,
+    ENTREGADO,
 
     /**
      * El pedido ha sido cancelado por el cliente o el sistema.
      */
-    CANCELLED
+    CANCELADO
 }

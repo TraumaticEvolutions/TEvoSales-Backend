@@ -1,5 +1,6 @@
 package com.traumaticevolutions.tevosales_backend.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ public interface OrderService {
      * @param pageable información de paginación
      * @return página de pedidos del usuario
      */
-    Page<Order> getAllOrdersAuthUserPaged(Pageable pageable);
+    Page<Order> getAllOrdersAuthUserPaged(Pageable pageable, LocalDateTime start, LocalDateTime end);
 
     /**
      * Obtiene un pedido específico del usuario autenticado por su ID.

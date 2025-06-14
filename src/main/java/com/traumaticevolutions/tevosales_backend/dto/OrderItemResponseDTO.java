@@ -35,4 +35,9 @@ public class OrderItemResponseDTO {
      * Subtotal (unitPrice * quantity).
      */
     private BigDecimal subtotal;
+
+    /**
+     * URL de la imagen del producto.
+     */
+    private String imagePath;
 }

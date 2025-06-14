@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,22 +65,28 @@ public class Order {
      * Estado actual del pedido.
      * Numerado como {@link OrderStatus}:
      * <ul>
-     * <li>PENDING: Pedido pendiente de procesar.</li>
-     * <li>PROCESSING: Pedido en proceso.</li>
-     * <li>SHIPPED: Pedido enviado.</li>
-     * <li>DELIVERED: Pedido entregado.</li>
-     * <li>CANCELLED: Pedido cancelado.</li>
+     * <li>PENDIENTE: Pedido pendiente de procesar.</li>
+     * <li>CONFIRMADO: Pedido confirmado.</li>
+     * <li>ENVIADO: Pedido enviado.</li>
+     * <li>ENTREGADO: Pedido entregado.</li>
+     * <li>CANCELADO: Pedido cancelado.</li>
      * </ul>
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status = OrderStatus.PENDING;
+    private OrderStatus status = OrderStatus.PENDIENTE;
 
     /**
      * Precio total del pedido. Se calcula en base a los productos y sus cantidades.
      */
     @Column(name = "total_price", nullable = false)
     private BigDecimal total;
+
+    /**
+     * Fecha y hora de creación del pedido.
+     */
+    @Column(nullable = true, updatable = false)
+    private LocalDateTime createdAt;
 
     /**
      * Relación con los productos del pedido, a través de la tabla intermedia

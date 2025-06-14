@@ -1,6 +1,7 @@
 package com.traumaticevolutions.tevosales_backend.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -77,6 +78,7 @@ public class OrderServiceImpl implements OrderService {
         order.setNumber(dto.getNumber());
         order.setFloor(dto.getFloor());
         order.setPostalCode(dto.getPostalCode());
+        order.setCreatedAt(LocalDateTime.now());
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -153,14 +155,25 @@ public class OrderServiceImpl implements OrderService {
      * Obtiene todos los pedidos del usuario autenticado de forma paginada.
      *
      * @param pageable información de paginación
+     * @param start    fecha de inicio del rango de búsqueda (opcional)
+     * @param end      fecha de fin del rango de búsqueda (opcional)
      * @return página de pedidos del usuario
      */
     @Override
-    public Page<Order> getAllOrdersAuthUserPaged(Pageable pageable) {
+    public Page<Order> getAllOrdersAuthUserPaged(Pageable pageable, LocalDateTime start, LocalDateTime end) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
-        return orderRepository.findByUser(user, pageable);
+
+        if (start != null && end != null) {
+            return orderRepository.findByUserAndCreatedAtBetween(user, start, end, pageable);
+        } else if (start != null) {
+            return orderRepository.findByUserAndCreatedAtAfter(user, start, pageable);
+        } else if (end != null) {
+            return orderRepository.findByUserAndCreatedAtBefore(user, end, pageable);
+        } else {
+            return orderRepository.findByUser(user, pageable);
+        }
     }
 
 }
