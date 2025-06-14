@@ -23,6 +23,8 @@ public interface OrderService {
      * Obtiene todos los pedidos del usuario autenticado de forma paginada.
      *
      * @param pageable información de paginación
+     * @param start    fecha de inicio del rango de búsqueda (opcional)
+     * @param end      fecha de fin del rango de búsqueda (opcional)
      * @return página de pedidos del usuario
      */
     Page<Order> getAllOrdersAuthUserPaged(Pageable pageable, LocalDateTime start, LocalDateTime end);
