@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -42,19 +40,6 @@ public class OrderController {
         Order createdOrder = orderService.create(requestDTO);
         OrderResponseDTO responseDTO = modelMapper.map(createdOrder, OrderResponseDTO.class);
         return ResponseEntity.status(201).body(responseDTO);
-    }
-
-    /**
-     * Obtiene todos los pedidos del usuario autenticado.
-     * 
-     * @return Lista de pedidos en formato {@code List<OrderResponseDTO>}
-     */
-    @GetMapping
-    public ResponseEntity<List<OrderResponseDTO>> getUserOrders() {
-        List<OrderResponseDTO> orders = orderService.getAllOrdersAuthUser().stream()
-                .map(order -> modelMapper.map(order, OrderResponseDTO.class))
-                .toList();
-        return ResponseEntity.ok(orders);
     }
 
     /**
