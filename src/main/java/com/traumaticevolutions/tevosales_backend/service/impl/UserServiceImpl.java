@@ -3,6 +3,7 @@ package com.traumaticevolutions.tevosales_backend.service.impl;
 import com.traumaticevolutions.tevosales_backend.model.Role;
 import com.traumaticevolutions.tevosales_backend.model.User;
 import com.traumaticevolutions.tevosales_backend.repository.UserRepository;
+import com.traumaticevolutions.tevosales_backend.repository.RoleRepository;
 import com.traumaticevolutions.tevosales_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,8 +14,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Implementación del servicio {@link UserService}.
@@ -33,6 +37,7 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     /**
      * Guarda un nuevo usuario con su contraseña encriptada.
@@ -55,6 +60,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    /**
+     * Busca un usuario por su ID.
+     * 
+     * @param id ID del usuario.
+     * @return Optional con el usuario encontrado, si existe.
+     */
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
     /**
@@ -93,9 +109,9 @@ public class UserServiceImpl implements UserService {
      * Busca usuarios con filtros aplicados a nombre de usuario, email, NIF y rol.
      * 
      * @param username Nombre de usuario.
-     * @param email Email del usuario.
-     * @param nif Número de identificación fiscal.
-     * @param role Rol del usuario.
+     * @param email    Email del usuario.
+     * @param nif      Número de identificación fiscal.
+     * @param role     Rol del usuario.
      * @param pageable Objeto Pageable con información de paginación.
      * @return Página de usuarios que coinciden con los filtros.
      */
@@ -104,7 +120,8 @@ public class UserServiceImpl implements UserService {
         Specification<User> spec = Specification.where(null);
 
         if (username != null && !username.isBlank()) {
-            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("username")), "%" + username.toLowerCase() + "%"));
+            spec = spec.and(
+                    (root, query, cb) -> cb.like(cb.lower(root.get("username")), "%" + username.toLowerCase() + "%"));
         }
         if (email != null && !email.isBlank()) {
             spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
@@ -120,5 +137,70 @@ public class UserServiceImpl implements UserService {
         }
 
         return userRepository.findAll(spec, pageable);
+    }
+
+    /**
+     * Actualiza los roles de un usuario.
+     * Asegura que el usuario siempre tenga el rol CLIENTE y, si es el usuario
+     * Admin,
+     * también el rol ADMIN.
+     * 
+     * @param userId ID del usuario a actualizar.
+     * @param roles  Lista de nombres de roles a asignar.
+     * @return Usuario actualizado.
+     */
+    @Override
+    public User updateUserRoles(Long userId, List<String> roles) {
+        boolean hasRoleCliente = false;
+        boolean hasRoleAdmin = false;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        Set<Role> newRoles = new HashSet<>();
+        for (String roleName : roles) {
+            Role role = roleRepository.findByName(roleName)
+                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + roleName));
+            newRoles.add(role);
+            if (roleName.equals("ROLE_CLIENTE")) {
+                hasRoleCliente = true;
+            }
+            if (roleName.equals("ROLE_ADMIN")) {
+                hasRoleAdmin = true;
+            }
+        }
+        if (!hasRoleCliente) {
+            Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
+                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: ROLE_CLIENTE"));
+            newRoles.add(clienteRole);
+        }
+        if (user.getUsername().equals("admin") && !hasRoleAdmin) {
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: ROLE_ADMIN"));
+            newRoles.add(adminRole);
+        }
+        user.setRoles(newRoles);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Elimina un usuario por su ID.
+     * No se permite eliminar al usuario Admin.
+     * 
+     * @param userId ID del usuario a eliminar.
+     * @return true si se eliminó correctamente, false si no se pudo eliminar (ej:
+     *         usuario Admin).
+     */
+    @Override
+    public boolean deleteUser(Long userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if ("admin".equals(user.getUsername())) {
+                return false;
+            }
+            userRepository.deleteById(userId);
+            return true;
+        }
+        return false;
     }
 }

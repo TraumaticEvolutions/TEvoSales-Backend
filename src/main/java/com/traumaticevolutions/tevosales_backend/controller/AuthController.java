@@ -38,8 +38,9 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         Optional<User> user = userService.findByUsername(request.getUsername());
 
+        System.out.println(user.toString());
         if (user.isEmpty() || !passwordEncoder.matches(request.getPassword(), user.get().getPassword())) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401).body(new AuthResponse("Invalid username or password"));
         }
 
         String token = jwtService.generateToken(user.get().getUsername(),

@@ -34,19 +34,6 @@ public class ProductController {
     private final ModelMapper modelMapper;
 
     /**
-     * Devuelve todos los productos.
-     * Disponible para cualquier usuario autenticado.
-     * 
-     * @return Lista de productos en formato {@code ProductResponseDTO}
-     */
-    @GetMapping
-    public ResponseEntity<List<ProductResponseDTO>> getAll() {
-        return ResponseEntity.ok(productService.findAll().stream()
-                .map(product -> modelMapper.map(product, ProductResponseDTO.class))
-                .toList());
-    }
-
-    /**
      * Devuelve todos los productos paginados.
      * 
      * @param name     Nombre del producto a filtrar (opcional)
@@ -62,7 +49,7 @@ public class ProductController {
      * @author Ángel Aragón
      * 
      */
-    @GetMapping("/paged")
+    @GetMapping
     public ResponseEntity<?> getAllPaged(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String brand,

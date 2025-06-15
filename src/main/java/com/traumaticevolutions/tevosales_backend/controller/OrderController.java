@@ -54,7 +54,7 @@ public class OrderController {
      * @param endDate   fecha de fin del rango de búsqueda (opcional)
      * @return página de pedidos en formato {@code Page<OrderResponseDTO>}
      */
-    @GetMapping("/paged")
+    @GetMapping
     public ResponseEntity<Page<OrderResponseDTO>> getUserOrdersPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,

@@ -6,6 +6,7 @@ import com.traumaticevolutions.tevosales_backend.repository.RoleRepository;
 import com.traumaticevolutions.tevosales_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import java.util.Optional;
  * @author Ángel Aragón
  */
 @Component
+@Order(2)
 @RequiredArgsConstructor
 public class UserSeeder implements CommandLineRunner {
 
@@ -32,6 +34,7 @@ public class UserSeeder implements CommandLineRunner {
 
         if (userRepository.findByUsername("admin").isEmpty()) {
             Optional<Role> adminRole = roleRepository.findByName("ROLE_ADMIN");
+            Optional<Role> clienteRole = roleRepository.findByName("ROLE_CLIENTE");
             if (adminRole.isPresent()) {
                 User admin = new User();
                 admin.setUsername("admin");
@@ -39,7 +42,7 @@ public class UserSeeder implements CommandLineRunner {
                 admin.setEmail("admin@tevosales.com");
                 admin.setNif("00000000T");
                 admin.setPassword(passwordEncoder.encode("admin123"));
-                admin.setRoles(new HashSet<>(List.of(adminRole.get())));
+                admin.setRoles(new HashSet<>(List.of(adminRole.get(), clienteRole.get())));
                 userRepository.save(admin);
             }
         }

@@ -74,22 +74,6 @@ public class UserController {
     }
 
     /**
-     * Endpoint para obtener un usuario por su email.
-     *
-     * @param email Email del usuario.
-     * @return Usuario encontrado como DTO.
-     */
-    @GetMapping("/{email}")
-    public ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable String email) {
-        Optional<User> user = userService.findByEmail(email);
-
-        return user.map(value -> {
-            UserResponseDTO dto = modelMapper.map(value, UserResponseDTO.class);
-            return ResponseEntity.ok(dto);
-        }).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    /**
      * Endpoint para obtener todos los usuarios con paginación y filtros.
      * Solo podrán acceder usuario con el rol admin usando
      * {@code @PreAuthorize("hasRole('ADMIN')")}.
@@ -102,7 +86,7 @@ public class UserController {
      * @param role     Filtro por rol (nombre del rol, ej: "ROLE_ADMIN").
      * @return Página de usuarios en formato DTO.
      */
-    @GetMapping("/paged")
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponseDTO>> getAllUsersPaged(
             @RequestParam(defaultValue = "0") int page,
@@ -115,5 +99,47 @@ public class UserController {
         Page<User> users = userService.findUsersWithFilters(username, email, nif, role, pageable);
         Page<UserResponseDTO> dtoPage = users.map(user -> modelMapper.map(user, UserResponseDTO.class));
         return ResponseEntity.ok(dtoPage);
+    }
+
+    /**
+     * Endpoint para actualizar los roles de un usuario.
+     * Solo accesible por administradores.
+     * 
+     * @param userId ID del usuario a modificar.
+     * @param roles  Lista de nombres de roles a asignar (ej: ["ROLE_ADMIN",
+     *               "ROLE_CLIENTE"])
+     * @return Usuario actualizado como DTO de respuesta.
+     */
+    @PutMapping("/roles/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateUserRoles(
+            @PathVariable Long userId,
+            @RequestBody java.util.List<String> roles) {
+        try {
+            User updatedUser = userService.updateUserRoles(userId, roles);
+            UserResponseDTO responseDTO = modelMapper.map(updatedUser, UserResponseDTO.class);
+            return ResponseEntity.ok(responseDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error interno al actualizar los roles del usuario");
+        }
+    }
+
+    /**
+     * Endpoint para eliminar un usuario por su ID.
+     * Solo accesible por administradores.
+     * 
+     * @param userId ID del usuario a eliminar.
+     * @return Mensaje de éxito o error.
+     */
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        if (userService.deleteUser(userId)) {
+            return ResponseEntity.ok("Usuario eliminado correctamente");
+        } else {
+            return ResponseEntity.status(400).body("No se puede eliminar al usuario");
+        }
     }
 }
