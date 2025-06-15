@@ -4,6 +4,10 @@ import com.traumaticevolutions.tevosales_backend.dto.RoleResponseDTO;
 import com.traumaticevolutions.tevosales_backend.model.Role;
 import com.traumaticevolutions.tevosales_backend.service.RoleService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +32,22 @@ public class RoleController {
      * @return Lista de roles como DTOs.
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<RoleResponseDTO>> getAllRoles() {
+        List<Role> roles = roleService.findAll();
+        List<RoleResponseDTO> dtos = roles.stream()
+                .map(role -> modelMapper.map(role, RoleResponseDTO.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
+     * Endpoint para obtener todos los roles del sistema.
+     * Solo accesible por usuarios con rol ADMIN.
+     *
+     * @return Lista de roles como DTOs.
+     */
+    @GetMapping("/paged")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<RoleResponseDTO>> getAllRolesPaged(
             @RequestParam(defaultValue = "0") int page,

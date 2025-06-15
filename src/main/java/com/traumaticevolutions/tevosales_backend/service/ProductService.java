@@ -83,10 +83,16 @@ public interface ProductService {
     List<Product> findByCategory(String category);
 
     /**
-     * Obtiene todos los productos de forma paginada.
+     * Busca productos con filtros aplicados a nombre, marca y categoría,
+     * devolviendo una página de resultados.
      *
-     * @param pageable información de paginación
-     * @return página de productos
+     * @param name     nombre del producto (opcional)
+     * @param brand    marca del producto (opcional)
+     * @param category categoría del producto (opcional)
+     * @param page     número de página
+     * @param size     tamaño de la página
+     * @param sort     criterio de ordenación
+     * @return página de productos filtrados
      */
-    Page<Product> findAllPaged(Pageable pageable);
+    Page<Product> findAllPaged(String name, String brand, String category, int page, int size, String sort);
 }

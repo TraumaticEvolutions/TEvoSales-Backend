@@ -6,7 +6,9 @@ import com.traumaticevolutions.tevosales_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -146,14 +148,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Obtiene una página de productos paginada.
+     * Busca productos con filtros aplicados a nombre, marca y categoría,
+     * devolviendo una página de resultados.
      *
-     * @param pageable objeto que contiene la información de paginación
-     * @return página de productos en formato {@code Page<Product>}
+     * @param name     nombre del producto (opcional)
+     * @param brand    marca del producto (opcional)
+     * @param category categoría del producto (opcional)
+     * @param page     número de página
+     * @param size     tamaño de la página
+     * @param sort     criterio de ordenación
+     * @return página de productos filtrados
      */
     @Override
-    public Page<Product> findAllPaged(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<Product> findAllPaged(String name, String brand, String category, int page, int size, String sort) {
+        String[] sortParts = sort.split(",");
+        Sort sortObj;
+        if (sortParts.length == 2) {
+            sortObj = Sort.by(new Sort.Order(Sort.Direction.fromString(sortParts[1]), sortParts[0]));
+        } else if (sortParts.length == 1 && !sortParts[0].isBlank()) {
+            sortObj = Sort.by(sortParts[0]).ascending();
+        } else {
+            sortObj = Sort.by("id").ascending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sortObj);
+        return searchProducts(name, category, brand, pageable);
     }
 
 }

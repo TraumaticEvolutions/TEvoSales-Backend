@@ -1,6 +1,7 @@
 package com.traumaticevolutions.tevosales_backend.controller;
 
 import com.traumaticevolutions.tevosales_backend.dto.UserRequestDTO;
+import com.traumaticevolutions.tevosales_backend.dto.UserResponseAdminDTO;
 import com.traumaticevolutions.tevosales_backend.dto.UserResponseDTO;
 import com.traumaticevolutions.tevosales_backend.model.Role;
 import com.traumaticevolutions.tevosales_backend.model.User;
@@ -88,7 +89,7 @@ public class UserController {
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserResponseDTO>> getAllUsersPaged(
+    public ResponseEntity<Page<UserResponseAdminDTO>> getAllUsersPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String username,
@@ -97,7 +98,7 @@ public class UserController {
             @RequestParam(required = false) String role) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("username").ascending());
         Page<User> users = userService.findUsersWithFilters(username, email, nif, role, pageable);
-        Page<UserResponseDTO> dtoPage = users.map(user -> modelMapper.map(user, UserResponseDTO.class));
+        Page<UserResponseAdminDTO> dtoPage = users.map(user -> modelMapper.map(user, UserResponseAdminDTO.class));
         return ResponseEntity.ok(dtoPage);
     }
 

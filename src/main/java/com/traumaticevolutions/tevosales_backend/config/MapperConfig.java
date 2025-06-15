@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.traumaticevolutions.tevosales_backend.dto.OrderItemResponseDTO;
-import com.traumaticevolutions.tevosales_backend.dto.UserResponseDTO;
+import com.traumaticevolutions.tevosales_backend.dto.UserResponseAdminDTO;
 import com.traumaticevolutions.tevosales_backend.model.OrderItem;
 import com.traumaticevolutions.tevosales_backend.model.Role;
 import com.traumaticevolutions.tevosales_backend.model.User;
@@ -42,7 +42,7 @@ public class MapperConfig {
             }
         });
 
-        modelMapper.addMappings(new PropertyMap<User, UserResponseDTO>() {
+        modelMapper.addMappings(new PropertyMap<User, UserResponseAdminDTO>() {
             @Override
             protected void configure() {
                 using(ctx -> ((User) ctx.getSource()).getOrders() != null ? ((User) ctx.getSource()).getOrders().size()
