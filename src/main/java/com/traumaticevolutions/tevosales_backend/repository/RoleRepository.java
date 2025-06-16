@@ -1,11 +1,10 @@
 package com.traumaticevolutions.tevosales_backend.repository;
 
 import com.traumaticevolutions.tevosales_backend.model.Role;
-
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +23,14 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * @return Optional con el rol encontrado (si existe).
      */
     Optional<Role> findByName(String name);
+
+    /**
+     * Busca todos los roles con paginación.
+     * 
+     * @param pageable Información de paginación.
+     * @return Página de roles.
+     */
+    Page<Role> findAll(Specification<Role> spec, Pageable pageable);
 
     /**
      * Busca roles por nombre con paginación.

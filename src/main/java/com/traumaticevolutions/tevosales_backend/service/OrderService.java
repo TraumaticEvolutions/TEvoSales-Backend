@@ -71,4 +71,17 @@ public interface OrderService {
      */
     Order updateStatus(Long id, OrderStatus status);
 
+    /**
+     * Obtiene todos los pedidos con filtros aplicados.
+     *
+     * @param pageable  información de paginación
+     * @param username  filtro por nombre de usuario (opcional)
+     * @param status    filtro por estado del pedido (opcional)
+     * @param startDate fecha de inicio del rango de búsqueda (opcional)
+     * @param endDate   fecha de fin del rango de búsqueda (opcional)
+     * @return página de pedidos que coinciden con los filtros
+     */
+    Page<Order> getAllOrdersPaged(Pageable pageable, String username, String status, LocalDateTime startDate,
+            LocalDateTime endDate);
+
 }

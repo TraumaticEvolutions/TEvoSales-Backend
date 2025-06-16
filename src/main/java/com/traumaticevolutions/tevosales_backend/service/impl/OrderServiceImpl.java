@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -174,6 +175,38 @@ public class OrderServiceImpl implements OrderService {
         } else {
             return orderRepository.findByUser(user, pageable);
         }
+    }
+
+    /**
+     * Obtiene todos los pedidos con filtros aplicados.
+     *
+     * @param pageable  información de paginación
+     * @param username  filtro por nombre de usuario (opcional)
+     * @param status    filtro por estado del pedido (opcional)
+     * @param startDate fecha de inicio del rango de búsqueda (opcional)
+     * @param endDate   fecha de fin del rango de búsqueda (opcional)
+     * @return página de pedidos que coinciden con los filtros
+     */
+    @Override
+    public Page<Order> getAllOrdersPaged(Pageable pageable, String username, String status, LocalDateTime startDate,
+            LocalDateTime endDate) {
+        Specification<Order> spec = Specification.where(null);
+
+        if (username != null && !username.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("user").get("username")),
+                    "%" + username.toLowerCase() + "%"));
+        }
+        if (status != null && !status.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), OrderStatus.valueOf(status)));
+        }
+        if (startDate != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("createdAt"), startDate));
+        }
+        if (endDate != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("createdAt"), endDate));
+        }
+
+        return orderRepository.findAll(spec, pageable);
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.traumaticevolutions.tevosales_backend.model.Role;
@@ -78,12 +79,13 @@ public class RoleServiceImpl implements RoleService {
      * @param pageable Información de paginación.
      * @return Página de roles filtrados.
      */
+    @Override
     public Page<Role> findAllPagedAndFiltered(String name, Pageable pageable) {
+        Specification<Role> spec = Specification.where(null);
         if (name != null && !name.isBlank()) {
-            return roleRepository.findByNameContainingIgnoreCase(name, pageable);
-        } else {
-            return roleRepository.findAll(pageable);
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
         }
+        return roleRepository.findAll(spec, pageable);
     }
 
     /**

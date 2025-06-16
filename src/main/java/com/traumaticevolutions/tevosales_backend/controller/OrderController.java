@@ -2,6 +2,7 @@ package com.traumaticevolutions.tevosales_backend.controller;
 
 import com.traumaticevolutions.tevosales_backend.dto.OrderRequestDTO;
 import com.traumaticevolutions.tevosales_backend.dto.OrderResponseDTO;
+import com.traumaticevolutions.tevosales_backend.dto.OrderStatusDTO;
 import com.traumaticevolutions.tevosales_backend.model.Order;
 import com.traumaticevolutions.tevosales_backend.model.enums.OrderStatus;
 import com.traumaticevolutions.tevosales_backend.service.OrderService;
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -67,6 +70,33 @@ public class OrderController {
     }
 
     /**
+     * Obtiene todos los pedidos del sistema de forma paginada.
+     * Solo accesible por usuarios con rol ADMIN.
+     *
+     * @param page      número de página a obtener
+     * @param size      tamaño de la página
+     * @param username  nombre de usuario para filtrar (opcional)
+     * @param status    estado del pedido para filtrar (opcional)
+     * @param startDate fecha de inicio del rango de búsqueda (opcional)
+     * @param endDate   fecha de fin del rango de búsqueda (opcional)
+     * @return página de pedidos en formato {@code Page<OrderResponseDTO>}
+     */
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<OrderResponseDTO>> getOrdersPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Order> orders = orderService.getAllOrdersPaged(pageable, username, status, startDate, endDate);
+        Page<OrderResponseDTO> dtoPage = orders.map(order -> modelMapper.map(order, OrderResponseDTO.class));
+        return ResponseEntity.ok(dtoPage);
+    }
+
+    /**
      * Obtiene un pedido específico del usuario autenticado por su ID.
      * 
      * @param id ID del pedido a consultar
@@ -82,18 +112,22 @@ public class OrderController {
     /**
      * Actualiza el estado de un pedido por su ID.
      * 
-     * @param id     ID del pedido a actualizar
-     * @param status Nuevo estado del pedido
+     * @param id        ID del pedido a actualizar
+     * @param statusDTO Nuevo estado del pedido
      * @return Pedido actualizado en formato {@code OrderResponseDTO}
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> updateOrderStatus(@PathVariable Long id,
-            @RequestBody String status) {
-        OrderStatus orderStatus = OrderStatus.valueOf(status);
-        OrderResponseDTO updatedOrder = modelMapper.map(orderService.updateStatus(id, orderStatus),
-                OrderResponseDTO.class);
-        return ResponseEntity.ok(updatedOrder);
+            @RequestBody OrderStatusDTO statusDTO) {
+        try {
+            OrderStatus orderStatus = OrderStatus.valueOf(statusDTO.getStatus().toUpperCase());
+            OrderResponseDTO updatedOrder = modelMapper.map(orderService.updateStatus(id, orderStatus),
+                    OrderResponseDTO.class);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**

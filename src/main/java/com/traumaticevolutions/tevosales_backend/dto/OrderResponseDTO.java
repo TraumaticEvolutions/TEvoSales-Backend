@@ -24,6 +24,11 @@ public class OrderResponseDTO {
     private Long id;
 
     /**
+     * Nombre de usuario del cliente que realizó el pedido.
+     */
+    private String username;
+
+    /**
      * Dirección de envío del pedido.
      */
     private String address;
