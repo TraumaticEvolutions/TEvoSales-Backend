@@ -43,10 +43,6 @@ public class ProductResponseDTO {
      */
     private String category;
     /**
-     * Indica si el producto está activo y disponible para la venta.
-     */
-    private Boolean active;
-    /**
      * Ruta de la imagen del producto.
      * Puede ser una URL o una ruta relativa al servidor.
      */

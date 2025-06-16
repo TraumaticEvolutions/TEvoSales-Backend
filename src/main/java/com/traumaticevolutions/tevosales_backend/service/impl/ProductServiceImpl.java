@@ -99,13 +99,26 @@ public class ProductServiceImpl implements ProductService {
     public Optional<Product> update(Long id, Product newP) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Producto no encontrado"));
-        existing.setName(newP.getName());
-        existing.setDescription(newP.getDescription());
-        existing.setPrice(newP.getPrice());
-        existing.setCategory(newP.getCategory());
-        existing.setImagePath(newP.getImagePath());
-        existing.setStock(newP.getStock());
-        existing.setActive(newP.getActive());
+
+        if (newP.getName() != null && !newP.getName().isBlank()) {
+            existing.setName(newP.getName());
+        }
+        if (newP.getDescription() != null && !newP.getDescription().isBlank()) {
+            existing.setDescription(newP.getDescription());
+        }
+        if (newP.getPrice() != null) {
+            existing.setPrice(newP.getPrice());
+        }
+        if (newP.getCategory() != null && !newP.getCategory().isBlank()) {
+            existing.setCategory(newP.getCategory());
+        }
+        if (newP.getImagePath() != null && !newP.getImagePath().isBlank()) {
+            existing.setImagePath(newP.getImagePath());
+        }
+        if (newP.getStock() != null) {
+            existing.setStock(newP.getStock());
+        }
+
         return Optional.of(productRepository.save(existing));
     }
 

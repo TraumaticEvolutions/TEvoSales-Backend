@@ -42,7 +42,7 @@ public class ProductRequestDTO {
      * No puede ser negativo.
      */
     @NotBlank(message = "El precio del producto es obligatorio")
-    @Min(value = 0, message = "El precio no puede ser negativo")
+    @Min(value = 1, message = "El precio no puede ser negativo ni 0")
     private BigDecimal price;
 
     /**
@@ -65,12 +65,5 @@ public class ProductRequestDTO {
      */
     @NotBlank(message = "La categoría del producto es obligatoria")
     private String category;
-
-    /**
-     * Estado de actividad del producto.
-     * No puede ser nulo.
-     */
-    @NotBlank(message = "El estado de actividad del producto es obligatorio")
-    private Boolean active;
 
 }
