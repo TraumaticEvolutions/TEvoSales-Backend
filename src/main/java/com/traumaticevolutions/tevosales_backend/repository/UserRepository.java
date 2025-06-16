@@ -1,11 +1,14 @@
 package com.traumaticevolutions.tevosales_backend.repository;
 
+import com.traumaticevolutions.tevosales_backend.dto.UserOrdersStatsDTO;
 import com.traumaticevolutions.tevosales_backend.model.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,4 +43,15 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @return Optional con el usuario encontrado (si existe).
      */
     Optional<User> findByNif(String nif);
+
+    /**
+     * Obtiene los 5 usuarios con más pedidos realizados.
+     * 
+     * @return Lista de DTOs con el nombre de usuario y la cantidad de pedidos.
+     */
+    @Query("SELECT new com.traumaticevolutions.tevosales_backend.dto.UserOrdersStatsDTO(u.username, COUNT(o)) " +
+            "FROM User u JOIN Order o ON o.user = u " +
+            "GROUP BY u.id, u.username " +
+            "ORDER BY COUNT(o) DESC")
+    List<UserOrdersStatsDTO> findTop5UsersWithMostOrders();
 }

@@ -1,5 +1,6 @@
 package com.traumaticevolutions.tevosales_backend.service.impl;
 
+import com.traumaticevolutions.tevosales_backend.dto.ProductSalesDTO;
 import com.traumaticevolutions.tevosales_backend.model.Product;
 import com.traumaticevolutions.tevosales_backend.repository.ProductRepository;
 import com.traumaticevolutions.tevosales_backend.service.ProductService;
@@ -185,6 +186,18 @@ public class ProductServiceImpl implements ProductService {
         }
         Pageable pageable = PageRequest.of(page, size, sortObj);
         return searchProducts(name, category, brand, pageable);
+    }
+
+    /**
+     * Obtiene los 5 productos más vendidos.
+     *
+     * @return lista de los 5 productos más vendidos con su nombre y cantidad
+     *         vendida
+     */
+    @Override
+    public List<ProductSalesDTO> getTop5BestSellers() {
+        List<ProductSalesDTO> all = productRepository.findTop5BestSellers();
+        return all.size() > 5 ? all.subList(0, 5) : all;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.traumaticevolutions.tevosales_backend.service.impl;
 
+import com.traumaticevolutions.tevosales_backend.dto.UserOrdersStatsDTO;
 import com.traumaticevolutions.tevosales_backend.model.Role;
 import com.traumaticevolutions.tevosales_backend.model.User;
 import com.traumaticevolutions.tevosales_backend.repository.UserRepository;
@@ -202,5 +203,16 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Obtiene los 5 usuarios con más pedidos realizados.
+     * 
+     * @return Lista de DTOs con el nombre de usuario y la cantidad de pedidos.
+     */
+    @Override
+    public List<UserOrdersStatsDTO> getTop5UsersWithMostOrders() {
+        List<UserOrdersStatsDTO> all = userRepository.findTop5UsersWithMostOrders();
+        return all.size() > 5 ? all.subList(0, 5) : all;
     }
 }

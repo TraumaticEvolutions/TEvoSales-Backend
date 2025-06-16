@@ -1,8 +1,10 @@
 package com.traumaticevolutions.tevosales_backend.repository;
 
+import com.traumaticevolutions.tevosales_backend.dto.ProductSalesDTO;
 import com.traumaticevolutions.tevosales_backend.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,4 +33,16 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
      * @return lista de productos de esa categoría
      */
     List<Product> findByCategoryIgnoreCase(String category);
+
+    /**
+     * Obtiene los 5 productos más vendidos.
+     * 
+     * @return lista de los 5 productos más vendidos con su nombre y cantidad
+     *         vendida
+     */
+    @Query("SELECT new com.traumaticevolutions.tevosales_backend.dto.ProductSalesDTO(p.name, SUM(oi.quantity)) " +
+            "FROM OrderItem oi JOIN oi.product p " +
+            "GROUP BY p.id, p.name " +
+            "ORDER BY SUM(oi.quantity) DESC")
+    List<ProductSalesDTO> findTop5BestSellers();
 }

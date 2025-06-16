@@ -1,5 +1,6 @@
 package com.traumaticevolutions.tevosales_backend.service;
 
+import com.traumaticevolutions.tevosales_backend.dto.ProductSalesDTO;
 import com.traumaticevolutions.tevosales_backend.model.Product;
 import java.util.List;
 import java.util.Optional;
@@ -95,4 +96,11 @@ public interface ProductService {
      * @return página de productos filtrados
      */
     Page<Product> findAllPaged(String name, String brand, String category, int page, int size, String sort);
+
+    /**
+     * Obtiene los 5 productos más vendidos.
+     *
+     * @return lista de los 5 productos más vendidos
+     */
+    List<ProductSalesDTO> getTop5BestSellers();
 }

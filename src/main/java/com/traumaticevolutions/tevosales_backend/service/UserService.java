@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.traumaticevolutions.tevosales_backend.dto.UserOrdersStatsDTO;
 import com.traumaticevolutions.tevosales_backend.model.User;
 
 /**
@@ -90,4 +91,11 @@ public interface UserService {
      * @param userId ID del usuario a eliminar.
      */
     boolean deleteUser(Long userId);
+
+    /**
+     * Obtiene los 5 usuarios con más pedidos.
+     * 
+     * @return Lista de los 5 usuarios con más pedidos.
+     */
+    List<UserOrdersStatsDTO> getTop5UsersWithMostOrders();
 }

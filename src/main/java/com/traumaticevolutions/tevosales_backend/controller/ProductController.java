@@ -2,6 +2,7 @@ package com.traumaticevolutions.tevosales_backend.controller;
 
 import com.traumaticevolutions.tevosales_backend.dto.ProductRequestDTO;
 import com.traumaticevolutions.tevosales_backend.dto.ProductResponseDTO;
+import com.traumaticevolutions.tevosales_backend.dto.ProductSalesDTO;
 import com.traumaticevolutions.tevosales_backend.model.Product;
 import com.traumaticevolutions.tevosales_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -183,5 +184,16 @@ public class ProductController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    /**
+     * Devuelve los 5 productos más vendidos y su cantidad.
+     * 
+     * @return lista de productos y cantidades vendidas
+     */
+    @GetMapping("/top-sellers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ProductSalesDTO>> getTop5BestSellers() {
+        return ResponseEntity.ok(productService.getTop5BestSellers());
     }
 }

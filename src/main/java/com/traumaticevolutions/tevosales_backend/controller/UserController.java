@@ -3,6 +3,7 @@ package com.traumaticevolutions.tevosales_backend.controller;
 import com.traumaticevolutions.tevosales_backend.dto.UserRequestDTO;
 import com.traumaticevolutions.tevosales_backend.dto.UserResponseAdminDTO;
 import com.traumaticevolutions.tevosales_backend.dto.UserResponseDTO;
+import com.traumaticevolutions.tevosales_backend.dto.UserOrdersStatsDTO;
 import com.traumaticevolutions.tevosales_backend.model.Role;
 import com.traumaticevolutions.tevosales_backend.model.User;
 import com.traumaticevolutions.tevosales_backend.service.RoleService;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -142,5 +144,16 @@ public class UserController {
         } else {
             return ResponseEntity.status(400).body("No se puede eliminar al usuario");
         }
+    }
+
+    /**
+     * Devuelve los 5 usuarios que más pedidos han hecho.
+     * 
+     * @return lista de usuarios y cantidad de pedidos realizados
+     */
+    @GetMapping("/top-users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserOrdersStatsDTO>> getTop5UsersWithMostOrders() {
+        return ResponseEntity.ok(userService.getTop5UsersWithMostOrders());
     }
 }
