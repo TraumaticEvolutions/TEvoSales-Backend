@@ -11,8 +11,6 @@ import java.util.List;
  * Repositorio para la gestión de productos.
  * Permite realizar operaciones CRUD sobre la entidad {@code Product}.
  * 
- * @extends JpaRepository<Product, Long>
- * @extends JpaSpecificationExecutor<Product>
  * @author Ángel Aragón
  */
 @Repository

@@ -34,18 +34,14 @@ public class ProductController {
      * Devuelve todos los productos paginados.
      * 
      * @param name     Nombre del producto a filtrar (opcional)
+     * @param brand    Marca del producto a filtrar (opcional)
      * @param category Categoría del producto a filtrar (opcional)
      * @param page     Número de página (0 por defecto)
      * @param size     Tamaño de página (10 por defecto)
      * @param sort     Criterios de ordenación (formato: campo,dirección)
      *                 Dirección puede ser 'asc' o 'desc' (por defecto 'id,asc')
-     * @throws IllegalArgumentException si los parámetros de ordenación son
-     *                                  inválidos
-     * @throws Exception                si ocurre un error interno al obtener los
-     *                                  productos
      * @return Página de productos en formato {@code ProductResponseDTO}
      * @author Ángel Aragón
-     * 
      */
     @GetMapping
     public ResponseEntity<?> getAllPaged(
@@ -126,8 +122,7 @@ public class ProductController {
      * Crea un nuevo producto.
      * Solo accesible para usuarios con rol ADMIN.
      * 
-     * @param dto   Producto en formato {@code ProductRequestDTO}
-     * @param image Imagen del producto (opcional)
+     * @param dto Producto en formato {@code ProductRequestDTO}
      * @return Producto creado en formato {@code ProductResponseDTO}
      */
     @PostMapping
@@ -174,6 +169,8 @@ public class ProductController {
      * Solo accesible para usuarios con rol ADMIN.
      * 
      * @param id Id del producto a eliminar.
+     * @return Respuesta HTTP sin contenido (204) si se eliminó correctamente,
+     *         o 404 si no se encontró el producto, o 400 si hubo un error.
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

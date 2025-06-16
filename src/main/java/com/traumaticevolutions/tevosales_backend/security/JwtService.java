@@ -22,6 +22,8 @@ public class JwtService {
      * Genera un token JWT válido por 24 horas con el username como subject.
      *
      * @param username Nombre de usuario autenticado.
+     * @param roles    Lista de roles del usuario.
+     * @param id       ID del usuario.
      * @return Token JWT generado.
      */
     public String generateToken(String username, List<String> roles, Long id) {

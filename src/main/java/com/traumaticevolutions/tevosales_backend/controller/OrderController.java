@@ -21,15 +21,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
-@RequestMapping("/api/orders")
-@RequiredArgsConstructor
 /**
  * Controlador REST para la gestión de pedidos.
  * Expone endpoints para crear y consultar pedidos del usuario autenticado.
  * 
  * @author Ángel Aragón
  */
+@RestController
+@RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
@@ -100,8 +100,7 @@ public class OrderController {
      * Obtiene un pedido específico del usuario autenticado por su ID.
      * 
      * @param id ID del pedido a consultar
-     * @return Pedido encontrado en formato {@code OrderResponseDTO}, o 404 si no
-     *         existe
+     * @return Pedido encontrado en formato {@code OrderResponseDTO}, o 404 si no existe
      */
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable Long id) {

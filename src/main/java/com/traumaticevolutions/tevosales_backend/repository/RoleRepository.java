@@ -27,6 +27,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     /**
      * Busca todos los roles con paginación.
      * 
+     * @param spec     Especificación para filtrar los roles.
      * @param pageable Información de paginación.
      * @return Página de roles.
      */

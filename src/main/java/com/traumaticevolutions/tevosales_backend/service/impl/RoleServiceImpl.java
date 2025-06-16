@@ -69,6 +69,18 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public Role saveRole(Role role) {
+        String name = role.getName();
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("El nombre del rol es obligatorio");
+        }
+        name = name.trim().toUpperCase();
+        if (!name.startsWith("ROLE_")) {
+            name = "ROLE_" + name;
+        }
+        if (roleRepository.findByName(name).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un rol con ese nombre");
+        }
+        role.setName(name);
         return roleRepository.save(role);
     }
 
@@ -102,7 +114,17 @@ public class RoleServiceImpl implements RoleService {
         if (PROTECTED_ROLES.contains(role.getName())) {
             throw new IllegalArgumentException("No se puede actualizar este rol protegido.");
         }
-        role.setName(roleDTO.getName());
+        String newName = roleDTO.getName();
+        if (newName != null && !newName.isBlank()) {
+            newName = newName.trim().toUpperCase();
+            if (!newName.startsWith("ROLE_")) {
+                newName = "ROLE_" + newName;
+            }
+            role.setName(newName);
+        }
+        if (roleRepository.findByName(role.getName()).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un rol con ese nombre");
+        }
         return roleRepository.save(role);
     }
 

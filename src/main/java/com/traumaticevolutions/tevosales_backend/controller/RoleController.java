@@ -17,6 +17,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador REST para la gestión de roles.
+ * Expone endpoints para crear, actualizar, eliminar y consultar roles del
+ * sistema.
+ * 
+ * @author Ángel Aragón
+ */
 @RestController
 @RequestMapping("/api/roles")
 @RequiredArgsConstructor
@@ -42,9 +49,14 @@ public class RoleController {
     }
 
     /**
-     * Endpoint para obtener todos los roles del sistema.
+     * Endpoint para obtener todos los roles del sistema paginados y filtrados.
      * Solo accesible por usuarios con rol ADMIN.
      *
+     * @param page Número de página a obtener (0-indexed).
+     * @param size Tamaño de la página.
+     * @param name Nombre del rol para filtrar (opcional).
+     *             Si se proporciona, solo se devolverán roles que contengan este
+     *             nombre.
      * @return Lista de roles como DTOs.
      */
     @GetMapping("/paged")
@@ -77,6 +89,11 @@ public class RoleController {
     /**
      * Endpoint para actualizar un rol.
      * No se pueden actualizar los roles protegidos.
+     * Solo accesible por usuarios con rol ADMIN.
+     * 
+     * @param id      ID del rol a actualizar.
+     * @param roleDTO Datos del rol a actualizar.
+     * @return Rol actualizado como DTO.
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -93,6 +110,10 @@ public class RoleController {
     /**
      * Endpoint para eliminar un rol.
      * No se pueden borrar los roles protegidos.
+     * 
+     * @param id ID del rol a eliminar.
+     * @return Respuesta HTTP sin contenido (204) si se eliminó correctamente,
+     *         o 404 si no se encontró el rol, o 400 si hubo un error.
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

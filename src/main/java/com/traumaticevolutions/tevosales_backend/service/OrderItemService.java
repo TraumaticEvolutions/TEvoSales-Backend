@@ -23,7 +23,7 @@ public interface OrderItemService {
     /**
      * Guarda una lista de ítems de pedido.
      *
-     * @param orderItemsDTO ítems a guardar
+     * @param orderItems ítems a guardar
      * @return lista de ítems guardados como DTO
      */
     List<OrderItem> saveAll(List<OrderItem> orderItems);

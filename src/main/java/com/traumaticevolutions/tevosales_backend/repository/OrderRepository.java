@@ -54,8 +54,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      *
      * @param id   el identificador del pedido
      * @param user el usuario autenticado
-     * @return true si se eliminó correctamente, false si no existía o no pertenecía
-     *         al usuario
      */
     void deleteByIdAndUser(Long id, User user);
 
@@ -96,5 +94,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      */
     Page<Order> findByUserAndCreatedAtBefore(User user, LocalDateTime end, Pageable pageable);
 
+    /**
+     * Busca pedidos con filtros aplicados.
+     *
+     * @param spec     especificación de búsqueda
+     * @param pageable información de paginación
+     * @return página de pedidos que coinciden con los filtros
+     */
     Page<Order> findAll(Specification<Order> spec, Pageable pageable);
 }

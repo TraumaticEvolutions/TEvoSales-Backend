@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
  * - Codificación de contraseñas usando BCrypt.
  * - Habilitamos anotaciones {@code @PreAuthorize} y con
  * - CORS configurado para permitir solicitudes desde el frontend en
- * {@link http://localhost:5173}.
  * {@code @EnableMethodSecurity(prePostEnabled = true)}.
  * 
  * @author Ángel Aragón

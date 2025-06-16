@@ -77,9 +77,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Crea un nuevo producto a partir de los datos proporcionados.
-     * 
-     * @param dto objeto con los datos del producto a crear
+     * Crea un nuevo producto con los datos proporcionados.
+     *
+     * @param product objeto con los datos del producto a crear
      * @return producto creado en formato {@code Optional<Product>}
      */
     @Override
