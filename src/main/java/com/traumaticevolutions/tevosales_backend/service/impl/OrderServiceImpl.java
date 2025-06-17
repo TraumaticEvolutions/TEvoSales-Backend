@@ -190,7 +190,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<Order> getAllOrdersPaged(Pageable pageable, String username, String status, LocalDateTime startDate,
             LocalDateTime endDate) {
-        Specification<Order> spec = Specification.where(null);
+        Specification<Order> spec = (root, query, cb) -> cb.conjunction();
 
         if (username != null && !username.isBlank()) {
             spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("user").get("username")),

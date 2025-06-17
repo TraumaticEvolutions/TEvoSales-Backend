@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Page<User> findUsersWithFilters(String username, String email, String nif, String role, Pageable pageable) {
-        Specification<User> spec = Specification.where(null);
+        Specification<User> spec = (root, query, cb) -> cb.conjunction();
 
         if (username != null && !username.isBlank()) {
             spec = spec.and(

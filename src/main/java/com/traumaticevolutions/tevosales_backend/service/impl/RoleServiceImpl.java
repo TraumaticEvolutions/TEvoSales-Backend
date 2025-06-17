@@ -93,7 +93,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public Page<Role> findAllPagedAndFiltered(String name, Pageable pageable) {
-        Specification<Role> spec = Specification.where(null);
+        Specification<Role> spec = (root, query, cb) -> cb.conjunction();
         if (name != null && !name.isBlank()) {
             spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
         }

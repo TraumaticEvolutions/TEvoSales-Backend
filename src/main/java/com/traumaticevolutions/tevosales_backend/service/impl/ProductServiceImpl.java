@@ -50,17 +50,25 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public Page<Product> searchProducts(String name, String category, String brand, Pageable pageable) {
-        Specification<Product> spec = Specification.where(null);
+        Specification<Product> spec = null;
 
         if (name != null && !name.isBlank()) {
-            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+            spec = (spec == null)
+                    ? (root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%")
+                    : spec.and(
+                            (root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
         }
         if (category != null && !category.isBlank()) {
-            spec = spec.and(
-                    (root, query, cb) -> cb.like(cb.lower(root.get("category")), "%" + category.toLowerCase() + "%"));
+            spec = (spec == null)
+                    ? (root, query, cb) -> cb.like(cb.lower(root.get("category")), "%" + category.toLowerCase() + "%")
+                    : spec.and((root, query, cb) -> cb.like(cb.lower(root.get("category")),
+                            "%" + category.toLowerCase() + "%"));
         }
         if (brand != null && !brand.isBlank()) {
-            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("brand")), "%" + brand.toLowerCase() + "%"));
+            spec = (spec == null)
+                    ? (root, query, cb) -> cb.like(cb.lower(root.get("brand")), "%" + brand.toLowerCase() + "%")
+                    : spec.and(
+                            (root, query, cb) -> cb.like(cb.lower(root.get("brand")), "%" + brand.toLowerCase() + "%"));
         }
 
         return productRepository.findAll(spec, pageable);
