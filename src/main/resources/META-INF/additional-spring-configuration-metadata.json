@@ -4,6 +4,11 @@
       "name": "jwt.secret",
       "type": "java.lang.String",
       "description": "Clave secreta utilizada para firmar y verificar los tokens JWT."
+    },
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Lista de orígenes permitidos para solicitudes CORS. Separa múltiples orígenes con comas."
     }
   ]
 }

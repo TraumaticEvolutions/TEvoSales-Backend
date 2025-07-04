@@ -4,3 +4,4 @@ target/
 *.iml
 *.md
 *.log
+.vscode/

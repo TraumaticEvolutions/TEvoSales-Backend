@@ -1,6 +1,6 @@
 # TEvoSales-Backend
 
-**Versión:** 1.1.1
+**Versión:** 1.1.2
 
 TEvoSales-Backend es el backend del marketplace de productos traumatológicos TEvoSales. Proporciona una API RESTful desarrollada en Java utilizando Spring Boot, con autenticación JWT, persistencia en MySQL y validación de datos.
 
