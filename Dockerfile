@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copia el JAR generado al contenedor (ajusta el nombre si cambias la versión)
-COPY target/tevosales-backend-1.1.1.jar app.jar
+COPY --from=build /app/target/tevosales-backend-1.1.2.jar app.jar
 
 # Expón el puerto por defecto de Spring Boot
 EXPOSE 8080
