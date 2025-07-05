@@ -1,14 +1,12 @@
-# Usa una imagen base de Java 17
-FROM eclipse-temurin:17-jdk
-
-# Crea el directorio de trabajo
+# Etapa 1: build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copia el JAR generado al contenedor (ajusta el nombre si cambias la versión)
+# Etapa 2: runtime
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
 COPY --from=build /app/target/tevosales-backend-1.1.2.jar app.jar
-
-# Expón el puerto por defecto de Spring Boot
 EXPOSE 8080
-
-# Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
